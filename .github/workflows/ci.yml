@@ -76,44 +76,56 @@ jobs:
       - name: Pack package
         run: yarn pack
 
-      - name: List packed file (debug)
+      - name: Find package file
         run: |
           echo "Files in directory:"
           ls -la *.tgz
-          PACKAGE_FILE=$(ls html-validate-nice-checkers-*.tgz | head -n1)
+          PACKAGE_FILE="package.tgz"
           echo "PACKAGE_FILE=$PACKAGE_FILE" >> $GITHUB_ENV
+          echo "Using package file: $PACKAGE_FILE"
 
       - name: Test ESM import
         run: |
-          mkdir -p test-esm
+          # Create test directory outside of workspace to avoid conflicts
+          cd /tmp
+          mkdir test-esm
           cd test-esm
+
           cat > package.json << 'JSON'
           {
             "type": "module"
           }
           JSON
+
           npm init -y
-          npm install ../${{ env.PACKAGE_FILE }}
+          npm install $GITHUB_WORKSPACE/$PACKAGE_FILE
+
           cat > test.mjs << 'JS'
           import plugin from 'html-validate-nice-checkers';
-          console.log('ESM import successful');
+          console.log('✅ ESM import successful');
           console.log('Plugin name:', plugin.name);
           console.log('Plugin rules:', Object.keys(plugin.rules || {}));
           console.log('Plugin configs:', Object.keys(plugin.configs || {}));
           JS
+
           node test.mjs
 
       - name: Test CJS require
         run: |
-          mkdir -p test-cjs
+          # Create test directory outside of workspace to avoid conflicts
+          cd /tmp
+          mkdir test-cjs
           cd test-cjs
+
           npm init -y
-          npm install ../${{ env.PACKAGE_FILE }}
+          npm install $GITHUB_WORKSPACE/$PACKAGE_FILE
+
           cat > test.cjs << 'JS'
           const plugin = require('html-validate-nice-checkers');
-          console.log('CJS require successful');
+          console.log('✅ CJS require successful');
           console.log('Plugin name:', plugin.default?.name || plugin.name);
           console.log('Plugin rules:', Object.keys(plugin.default?.rules || plugin.rules || {}));
           console.log('Plugin configs:', Object.keys(plugin.default?.configs || plugin.configs || {}));
           JS
+
           node test.cjs
