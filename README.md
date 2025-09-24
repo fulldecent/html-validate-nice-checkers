@@ -30,7 +30,7 @@ Update your .htmlvalidate.json configuration
 {
   "plugins": ["dist"],
 -  "extends": ["htmlvalidate:recommended"]
-+  "extends": ["htmlvalidate:recommended", "nice-checkers:recommended"]
++  "extends": ["htmlvalidate:recommended", "nice-checkers-plugin:recommended"]
 }
 ```
 
@@ -41,7 +41,7 @@ You can configure individual rules:
 ```json
 {
   "plugins": ["nice-checkers"],
-  "extends": ["html-validate:recommended", "nice-checkers:recommended"],
+  "extends": ["html-validate:recommended", "nice-checkers-plugin:recommended"],
   "rules": {
     "nice-checkers/canonical-link": "error",
     "nice-checkers/external-links": [
@@ -73,7 +73,7 @@ You can configure individual rules:
 
 ## Rules
 
-All rules are enabled by default when you extend from `nice-checkers:recommended`.
+All rules are enabled by default when you extend from `nice-checkers-plugin:recommended`.
 
 ### `nice-checkers/canonical-link`
 

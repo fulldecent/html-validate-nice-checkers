@@ -67,10 +67,10 @@ describe('fixture validation against required output', () => {
   // Only run if we have both fixtures and expected output
   if (requiredOutputs !== null && fixtureFiles.length > 0) {
     describe('required output validation', () => {
-      const plugin = new NiceCheckersPlugin()
+      const plugin = NiceCheckersPlugin
       const loader = new StaticConfigLoader({
         plugins: [plugin],
-        extends: ['nice-checkers:recommended'],
+        extends: ['nice-checkers-plugin:recommended'],
         rules: {
           // Disable caching for tests to ensure consistent results
           'nice/external-links': [

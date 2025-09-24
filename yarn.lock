@@ -1637,28 +1637,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-validate-nice-checkers@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "html-validate-nice-checkers@workspace:."
-  dependencies:
-    "@types/better-sqlite3": "npm:^7.6.13"
-    "@types/node": "npm:^22.0.0"
-    "@types/shell-quote": "npm:^1.7.5"
-    "@vitest/coverage-v8": "npm:^3.2.4"
-    better-sqlite3: "npm:^12.4.1"
-    html-validate: "npm:^10.0.0"
-    prettier: "npm:^3.3.0"
-    rimraf: "npm:^6.0.1"
-    shell-quote: "npm:^1.8.3"
-    structured-data-testing-tool: "npm:^4.5.0"
-    tsup: "npm:^8.5.0"
-    typescript: "npm:^5.9.2"
-    vitest: "npm:^3.2.4"
-  peerDependencies:
-    html-validate: ^8.0.0
-  languageName: unknown
-  linkType: soft
-
 "html-validate@npm:^10.0.0":
   version: 10.0.0
   resolution: "html-validate@npm:10.0.0"
@@ -2273,6 +2251,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nice-checkers-plugin@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "nice-checkers-plugin@workspace:."
+  dependencies:
+    "@types/better-sqlite3": "npm:^7.6.13"
+    "@types/node": "npm:^22.0.0"
+    "@types/shell-quote": "npm:^1.7.5"
+    "@vitest/coverage-v8": "npm:^3.2.4"
+    better-sqlite3: "npm:^12.4.1"
+    html-validate: "npm:^10.0.0"
+    prettier: "npm:^3.6.2"
+    rimraf: "npm:^6.0.1"
+    shell-quote: "npm:^1.8.3"
+    structured-data-testing-tool: "npm:^4.5.0"
+    tsup: "npm:^8.5.0"
+    typescript: "npm:^5.9.2"
+    vitest: "npm:^3.2.4"
+  peerDependencies:
+    html-validate: ^8.10.0 || ^9.0.0 || ^10.0.0
+  languageName: unknown
+  linkType: soft
+
 "node-abi@npm:^3.3.0":
   version: 3.77.0
   resolution: "node-abi@npm:3.77.0"
@@ -2527,7 +2527,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.3.0":
+"prettier@npm:^3.6.2":
   version: 3.6.2
   resolution: "prettier@npm:3.6.2"
   bin:

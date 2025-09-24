@@ -1,5 +1,5 @@
 {
-  "name": "html-validate-nice-checkers",
+  "name": "nice-checkers-plugin",
   "version": "0.1.0",
   "description": "HTML-validate plugin and rules you should always use",
   "author": "William Entriken",
@@ -61,7 +61,7 @@
     "@types/shell-quote": "^1.7.5",
     "@vitest/coverage-v8": "^3.2.4",
     "html-validate": "^10.0.0",
-    "prettier": "^3.3.0",
+    "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "structured-data-testing-tool": "^4.5.0",
     "tsup": "^8.5.0",
@@ -69,10 +69,10 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "html-validate": "^8.0.0"
+    "html-validate": "^8.10.0 || ^9.0.0 || ^10.0.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "packageManager": "yarn@4.10.3",
   "dependencies": {

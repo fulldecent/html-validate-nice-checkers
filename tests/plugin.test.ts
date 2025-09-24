@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import NiceCheckersPlugin from '../src/index'
 
-const plugin = new NiceCheckersPlugin()
+const plugin = NiceCheckersPlugin
 
 describe('HTML-validate Nice Checkers plugin', () => {
   describe('plugin structure', () => {
     it('should have correct plugin name', () => {
-      expect(plugin.name).toBe('nice-checkers')
+      expect(plugin.name).toBe('nice-checkers-plugin')
     })
 
     it('should export rules object', () => {
