@@ -50,15 +50,6 @@ jobs:
       - name: Build package
         run: yarn build
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        if: matrix.node-version == '20.x'
-        with:
-          file: ./coverage/clover.xml
-          fail_ci_if_error: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
   # Test package installation and imports
   package-test:
     runs-on: ubuntu-latest
