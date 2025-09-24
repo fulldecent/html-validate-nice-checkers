@@ -76,6 +76,13 @@ jobs:
       - name: Pack package
         run: yarn pack
 
+      - name: List packed file (debug)
+        run: |
+          echo "Files in directory:"
+          ls -la *.tgz
+          PACKAGE_FILE=$(ls html-validate-nice-checkers-*.tgz | head -n1)
+          echo "PACKAGE_FILE=$PACKAGE_FILE" >> $GITHUB_ENV
+
       - name: Test ESM import
         run: |
           mkdir -p test-esm
@@ -85,8 +92,8 @@ jobs:
             "type": "module"
           }
           JSON
-          yarn init -y
-          yarn add ../html-validate-nice-checkers-v*.tgz
+          npm init -y
+          npm install ../${{ env.PACKAGE_FILE }}
           cat > test.mjs << 'JS'
           import plugin from 'html-validate-nice-checkers';
           console.log('ESM import successful');
@@ -100,8 +107,8 @@ jobs:
         run: |
           mkdir -p test-cjs
           cd test-cjs
-          yarn init -y
-          yarn add ../html-validate-nice-checkers-v*.tgz
+          npm init -y
+          npm install ../${{ env.PACKAGE_FILE }}
           cat > test.cjs << 'JS'
           const plugin = require('html-validate-nice-checkers');
           console.log('CJS require successful');
