@@ -45,6 +45,7 @@ jobs:
       - name: Build package
         run: yarn build
 
+  # Test package installation and imports
   package-test:
     runs-on: ubuntu-latest
     needs: test
@@ -67,13 +68,11 @@ jobs:
           yarn install --immutable
           yarn build
 
-      - name: Pack and identify package file
-        id: package_file
+      - name: Pack package
         run: |
-          # Use --json flag for machine-readable output and parse with jq
-          PACKAGE_NAME=$(yarn pack --json | jq -r .location)
-          echo "package_path=${PACKAGE_NAME}" >> $GITHUB_OUTPUT
-          echo "Found package file: ${PACKAGE_NAME}"
+          yarn pack
+          echo "Package files created:"
+          ls -la *.tgz
 
       - name: Test ESM import
         run: |
@@ -87,8 +86,8 @@ jobs:
           JSON
           npm init -y > /dev/null
 
-          # Install the packed tarball from the workspace
-          npm install "${{ github.workspace }}/${{ steps.package_file.outputs.package_path }}"
+          # Install the packed tarball - yarn pack always creates package.tgz
+          npm install "${{ github.workspace }}/package.tgz"
 
           # Create test script
           cat > test.mjs << 'JS'
@@ -106,7 +105,7 @@ jobs:
           mkdir -p test-cjs && cd test-cjs
 
           npm init -y > /dev/null
-          npm install "${{ github.workspace }}/${{ steps.package_file.outputs.package_path }}"
+          npm install "${{ github.workspace }}/package.tgz"
 
           cat > test.cjs << 'JS'
           const plugin = require('html-validate-nice-checkers');
