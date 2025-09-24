@@ -21,6 +21,7 @@ interface UrlCacheRow {
 interface RuleOptions {
   proxyUrl: string
   skipUrls: string[]
+  skipUrl: string[] // Support both singular and plural forms for backwards compatibility
   cacheExpiryFoundSeconds: number
   cacheExpiryNotFoundSeconds: number
   timeoutSeconds: number
@@ -31,6 +32,7 @@ interface RuleOptions {
 const defaults: RuleOptions = {
   proxyUrl: '',
   skipUrls: [],
+  skipUrl: [],
   cacheExpiryFoundSeconds: 30 * 24 * 60 * 60, // Default: 30 days
   cacheExpiryNotFoundSeconds: 3 * 24 * 60 * 60, // Default: 3 days
   timeoutSeconds: 5,
@@ -71,6 +73,14 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
           type: 'string',
         },
         description: 'An array of regex patterns (as strings) for URLs to skip.',
+      },
+      skipUrl: {
+        type: 'array',
+        items: {
+          type: 'string',
+        },
+        description:
+          'An array of regex patterns (as strings) for URLs to skip (alternative to skipUrls).',
       },
       cacheExpiryFoundSeconds: {
         type: 'number',
@@ -127,8 +137,13 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
   }
 
   private initializeSkipRegex(): RegExp[] {
-    const patterns = this.options?.skipUrls
-    if (!Array.isArray(patterns)) {
+    // Support both skipUrl and skipUrls for backwards compatibility
+    // Merge both arrays, with skipUrl taking precedence if both are provided
+    const skipUrl = this.options?.skipUrl || []
+    const skipUrls = this.options?.skipUrls || []
+    const patterns = [...skipUrl, ...skipUrls]
+
+    if (!Array.isArray(patterns) || patterns.length === 0) {
       return []
     }
     return patterns

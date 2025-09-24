@@ -45,7 +45,7 @@ You can configure individual rules:
     "nice-checkers/external-links": [
       "error",
       {
-        "skipUrlPatterns": ["example.com", "localhost"],
+        "skipUrls": ["example.com", "localhost"],
         "cacheExpiryFoundSeconds": 2592000
       }
     ],
@@ -66,6 +66,56 @@ You can configure individual rules:
     ],
     "nice-checkers/no-jquery": "error"
   }
+}
+```
+
+### TypeScript API Usage
+
+For programmatic usage in TypeScript/JavaScript:
+
+```typescript
+import { HtmlValidate, StaticConfigLoader } from 'html-validate'
+import NiceCheckersPlugin from '@fulldecent/nice-checkers-plugin'
+
+// Create a config loader with Nice Checkers plugin
+const loader = new StaticConfigLoader({
+  plugins: [NiceCheckersPlugin],
+  extends: ['html-validate:recommended', 'nice-checkers-plugin:recommended'],
+  rules: {
+    'nice-checkers/external-links': [
+      'error',
+      {
+        skipUrls: ['dont-check-this\\.example\\.com', 'invalid-hostname.*\\.test'],
+        cacheExpiryFoundSeconds: 2592000,
+        cacheExpiryNotFoundSeconds: 259200,
+      },
+    ],
+  },
+})
+
+// Initialize HTML validator
+const htmlvalidate = new HtmlValidate(loader)
+
+// Validate HTML string
+async function validateHtml(htmlContent: string) {
+  const report = await htmlvalidate.validateString(htmlContent)
+
+  if (report.valid) {
+    console.log('HTML is valid!')
+  } else {
+    console.log('Validation errors found:')
+    for (const result of report.results) {
+      for (const message of result.messages) {
+        console.log(`${message.severity}: ${message.message} (${message.ruleId})`)
+      }
+    }
+  }
+}
+
+// Validate HTML file
+async function validateFile(filePath: string) {
+  const report = await htmlvalidate.validateFile(filePath)
+  return report
 }
 ```
 
@@ -155,7 +205,7 @@ Validates that all external links are live and accessible. Uses caching to avoid
       "error",
       {
         "proxyUrl": "",
-        "skipUrlPatterns": ["example.com", "localhost"],
+        "skipUrls": ["example.com", "localhost"],
         "cacheExpiryFoundSeconds": 2592000,
         "cacheExpiryNotFoundSeconds": 259200,
         "timeoutSeconds": 5,
@@ -167,12 +217,44 @@ Validates that all external links are live and accessible. Uses caching to avoid
 }
 ```
 
+**Configuration (.htmlvalidate.mjs):**
+
+```javascript
+import { defineConfig } from 'html-validate'
+import NiceCheckersPlugin from '@fulldecent/nice-checkers-plugin'
+
+export default defineConfig({
+  plugins: [NiceCheckersPlugin],
+  extends: ['html-validate:prettier', 'nice-checkers-plugin:recommended'],
+  rules: {
+    'nice-checkers/external-links': [
+      'error',
+      {
+        proxyUrl: 'https://api.example.com/link-check/status',
+        skipUrl: [
+          'dont-check-this\\.example\\.com',
+          'https://x\\.com/',
+          'https://www\\.linkedin\\.com/',
+        ],
+        cacheExpiryFoundSeconds: 2592000,
+        cacheExpiryNotFoundSeconds: 259200,
+        timeoutSeconds: 5,
+        cacheDatabasePath: 'cache/external-links.db',
+      },
+    ],
+  },
+})
+```
+
 **Options:**
 
-- `skipUrlPatterns`: Array of regex patterns for URLs to skip checking
+- `skipUrls` or `skipUrl`: Array of regex patterns for URLs to skip checking (both forms supported for compatibility)
+- `proxyUrl`: URL of a proxy server to check external links
 - `cacheExpiryFoundSeconds`: Cache duration for successful checks (default: 30 days)
 - `cacheExpiryNotFoundSeconds`: Cache duration for failed checks (default: 3 days)
 - `timeoutSeconds`: Request timeout (default: 5 seconds)
+- `cacheDatabasePath`: File path for the SQLite cache database
+- `userAgent`: User-Agent string to use for requests
 
 ### `nice-checkers/https-links`
 
