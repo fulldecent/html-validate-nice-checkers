@@ -1,163 +1,284 @@
 {
   "tests/fixtures/CanonicalLinkRule-violation.html": [
     {
-      "ruleId": "nice/external-links",
+      "ruleId": "nice-checkers/canonical-link",
       "severity": 2,
-      "message": "Definition for rule 'nice/external-links' was not found",
-      "size": 0,
-      "selector": null
-    },
-    {
-      "ruleId": "nice/https-links",
-      "severity": 2,
-      "message": "Definition for rule 'nice/https-links' was not found",
-      "size": 0,
-      "selector": null
-    },
-    {
-      "ruleId": "nice/latest-packages",
-      "severity": 2,
-      "message": "Definition for rule 'nice/latest-packages' was not found",
-      "size": 0,
-      "selector": null
+      "message": "<head> is missing <link rel=\"canonical\" ...>",
+      "offset": 36,
+      "line": 3,
+      "column": 4,
+      "size": 4,
+      "selector": "html > head",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     }
   ],
   "tests/fixtures/ExternalLinkRule-violations.html": [
     {
-      "ruleId": "nice/external-links",
+      "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "Definition for rule 'nice/external-links' was not found",
-      "size": 0,
-      "selector": null
+      "message": "External link is broken with status 503: https://httpbin.org/status/200",
+      "offset": 184,
+      "line": 6,
+      "column": 65,
+      "size": 2,
+      "selector": "html > head > link",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     },
     {
-      "ruleId": "nice/https-links",
+      "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "Definition for rule 'nice/https-links' was not found",
-      "size": 0,
-      "selector": null
+      "message": "External link is broken with status 503: https://httpbin.org/status/400",
+      "offset": 251,
+      "line": 10,
+      "column": 45,
+      "size": 1,
+      "selector": "html > body > a:nth-child(1)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     },
     {
-      "ruleId": "nice/latest-packages",
+      "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "Definition for rule 'nice/latest-packages' was not found",
-      "size": 0,
-      "selector": null
+      "message": "External link is broken with status 503: https://httpbin.org/status/500",
+      "offset": 310,
+      "line": 11,
+      "column": 45,
+      "size": 1,
+      "selector": "html > body > a:nth-child(2)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+    },
+    {
+      "ruleId": "nice-checkers/external-links",
+      "severity": 2,
+      "message": "External link is broken with status 503: https://httpbin.org/redirect-to?url=https%3A%2F%2Fexample.com&status_code=301",
+      "offset": 423,
+      "line": 13,
+      "column": 7,
+      "size": 1,
+      "selector": "html > body > a:nth-child(3)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+    },
+    {
+      "ruleId": "nice-checkers/external-links",
+      "severity": 2,
+      "message": "External link is broken with status 500: https://----.httpbin.org",
+      "offset": 484,
+      "line": 15,
+      "column": 39,
+      "size": 1,
+      "selector": "html > body > a:nth-child(4)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+    },
+    {
+      "ruleId": "nice-checkers/external-links",
+      "severity": 2,
+      "message": "External link is broken with status 500: https://-..-..-.-.-",
+      "offset": 549,
+      "line": 16,
+      "column": 34,
+      "size": 1,
+      "selector": "html > body > a:nth-child(5)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     }
   ],
   "tests/fixtures/HttpsLinksRule-violation.html": [
     {
-      "ruleId": "nice/external-links",
+      "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "Definition for rule 'nice/external-links' was not found",
-      "size": 0,
-      "selector": null
+      "message": "External link is broken with status 503: https://httpbin.org/status/200",
+      "offset": 184,
+      "line": 6,
+      "column": 65,
+      "size": 2,
+      "selector": "html > head > link",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     },
     {
-      "ruleId": "nice/https-links",
+      "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "Definition for rule 'nice/https-links' was not found",
-      "size": 0,
-      "selector": null
-    },
-    {
-      "ruleId": "nice/latest-packages",
-      "severity": 2,
-      "message": "Definition for rule 'nice/latest-packages' was not found",
-      "size": 0,
-      "selector": null
+      "message": "External link is broken with status 503: http://httpbin.org/status/200",
+      "offset": 250,
+      "line": 10,
+      "column": 44,
+      "size": 1,
+      "selector": "html > body > a",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     }
   ],
   "tests/fixtures/InternalLinksRule-violation.html": [
     {
-      "ruleId": "nice/external-links",
+      "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "Definition for rule 'nice/external-links' was not found",
-      "size": 0,
-      "selector": null
+      "message": "External link is broken with status 503: https://httpbin.org/status/200",
+      "offset": 184,
+      "line": 6,
+      "column": 65,
+      "size": 2,
+      "selector": "html > head > link",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     },
     {
-      "ruleId": "nice/https-links",
+      "ruleId": "nice-checkers/internal-links",
       "severity": 2,
-      "message": "Definition for rule 'nice/https-links' was not found",
-      "size": 0,
-      "selector": null
+      "message": "Internal link to \"/nonexistent-page\" is broken.",
+      "offset": 238,
+      "line": 10,
+      "column": 32,
+      "size": 1,
+      "selector": "html > body > a:nth-child(1)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     },
     {
-      "ruleId": "nice/latest-packages",
+      "ruleId": "nice-checkers/internal-links",
       "severity": 2,
-      "message": "Definition for rule 'nice/latest-packages' was not found",
-      "size": 0,
-      "selector": null
+      "message": "Internal link to \"/InternalLinksRule-violation\" is broken.",
+      "offset": 433,
+      "line": 15,
+      "column": 7,
+      "size": 1,
+      "selector": "html > body > a:nth-child(3)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     }
   ],
   "tests/fixtures/LatestPackagesRule-violation.html": [
     {
-      "ruleId": "nice/external-links",
-      "severity": 2,
-      "message": "Definition for rule 'nice/external-links' was not found",
-      "size": 0,
-      "selector": null
+      "ruleId": "nice-checkers/latest-packages",
+      "severity": 1,
+      "message": "Package is using an outdated version: https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js",
+      "offset": 318,
+      "line": 10,
+      "column": 5,
+      "size": 1,
+      "selector": "html > head > script",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     },
     {
-      "ruleId": "nice/https-links",
+      "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "Definition for rule 'nice/https-links' was not found",
-      "size": 0,
-      "selector": null
-    },
-    {
-      "ruleId": "nice/latest-packages",
-      "severity": 2,
-      "message": "Definition for rule 'nice/latest-packages' was not found",
-      "size": 0,
-      "selector": null
+      "message": "External link is broken with status 503: https://httpbin.org/status/200",
+      "offset": 393,
+      "line": 11,
+      "column": 65,
+      "size": 2,
+      "selector": "html > head > link",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     }
   ],
   "tests/fixtures/MailtoAwesomeRule-violation.html": [
     {
-      "ruleId": "nice/external-links",
+      "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "Definition for rule 'nice/external-links' was not found",
-      "size": 0,
-      "selector": null
+      "message": "External link is broken with status 503: https://httpbin.org/status/200",
+      "offset": 184,
+      "line": 6,
+      "column": 65,
+      "size": 2,
+      "selector": "html > head > link",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     },
     {
-      "ruleId": "nice/https-links",
+      "ruleId": "nice-checkers/mailto-awesome",
       "severity": 2,
-      "message": "Definition for rule 'nice/https-links' was not found",
-      "size": 0,
-      "selector": null
+      "message": "mailto: link is missing required parameters: subject, body",
+      "offset": 271,
+      "line": 10,
+      "column": 65,
+      "size": 1,
+      "selector": "html > body > a:nth-child(1)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     },
     {
-      "ruleId": "nice/latest-packages",
+      "ruleId": "nice-checkers/mailto-awesome",
       "severity": 2,
-      "message": "Definition for rule 'nice/latest-packages' was not found",
-      "size": 0,
-      "selector": null
+      "message": "mailto: link is missing required parameters: body",
+      "offset": 360,
+      "line": 11,
+      "column": 77,
+      "size": 1,
+      "selector": "html > body > a:nth-child(2)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     }
   ],
   "tests/fixtures/NoJqueryRule-violation.html": [
     {
-      "ruleId": "nice/external-links",
+      "ruleId": "nice-checkers/no-jquery",
       "severity": 2,
-      "message": "Definition for rule 'nice/external-links' was not found",
-      "size": 0,
-      "selector": null
+      "message": "Script tag with src including jQuery is not allowed",
+      "offset": 292,
+      "line": 10,
+      "column": 5,
+      "size": 1,
+      "selector": "html > head > script",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     },
     {
-      "ruleId": "nice/https-links",
+      "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "Definition for rule 'nice/https-links' was not found",
-      "size": 0,
-      "selector": null
+      "message": "External link is broken with status 503: https://httpbin.org/status/200",
+      "offset": 367,
+      "line": 11,
+      "column": 65,
+      "size": 2,
+      "selector": "html > head > link",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+    }
+  ],
+  "tests/fixtures/SchemaOrgJsonLdRule-violation.html": [
+    {
+      "ruleId": "nice-checkers/canonical-link",
+      "severity": 2,
+      "message": "<head> is missing <link rel=\"canonical\" ...>",
+      "offset": 36,
+      "line": 3,
+      "column": 4,
+      "size": 4,
+      "selector": "html > head",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     },
     {
-      "ruleId": "nice/latest-packages",
+      "ruleId": "nice-checkers/schema-org-json-ld",
       "severity": 2,
-      "message": "Definition for rule 'nice/latest-packages' was not found",
-      "size": 0,
-      "selector": null
+      "message": "Schema.org type \"MyTotallyFakeClass\" is not a valid class.",
+      "offset": 616,
+      "line": 26,
+      "column": 6,
+      "size": 6,
+      "selector": "html > body > script:nth-child(4)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#schema-org-json-ld"
+    },
+    {
+      "ruleId": "nice-checkers/schema-org-json-ld",
+      "severity": 2,
+      "message": "Schema.org property \"myBogusProperty\" is not a valid property.",
+      "offset": 947,
+      "line": 38,
+      "column": 6,
+      "size": 6,
+      "selector": "html > body > script:nth-child(6)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#schema-org-json-ld"
+    },
+    {
+      "ruleId": "nice-checkers/schema-org-json-ld",
+      "severity": 2,
+      "message": "Top-level JSON-LD object is missing required \"@type\" property.",
+      "offset": 1346,
+      "line": 52,
+      "column": 6,
+      "size": 6,
+      "selector": "html > body > script:nth-child(8)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#schema-org-json-ld"
+    }
+  ],
+  "tests/fixtures/no-errors.html": [
+    {
+      "ruleId": "nice-checkers/external-links",
+      "severity": 2,
+      "message": "External link is broken with status 503: https://httpbin.org/status/200",
+      "offset": 184,
+      "line": 6,
+      "column": 65,
+      "size": 2,
+      "selector": "html > head > link",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     }
   ]
 }

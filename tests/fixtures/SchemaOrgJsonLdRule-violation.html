@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSON-LD Schema Test Page</title>
+  </head>
+
+  <body>
+    <!--
+      1. GOOD: A simple and completely valid schema that should PASS.
+    -->
+    <h1 type="application/ld+json">Simple & Valid Schema</h1>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "My Awesome Site",
+        "url": "https://example.com/"
+      }
+    </script>
+
+    <!--
+      2. FAIL: An invalid @type (class) that should be flagged.
+    -->
+    <h1>Invalid Class Type</h1>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "MyTotallyFakeClass",
+        "name": "This object has an invalid type"
+      }
+    </script>
+
+    <!--
+      3. FAIL: A valid @type but with an invalid property that should be flagged.
+    -->
+    <h1>Invalid Property</h1>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "My Awesome Site",
+        "url": "https://example.com/",
+        "myBogusProperty": "This property does not exist in Schema.org"
+      }
+    </script>
+
+    <!--
+      4. FAIL: A schema object missing the required @type property.
+    -->
+    <h1>Missing @type</h1>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "name": "This object is missing its @type"
+      }
+    </script>
+
+    <!--
+      5. FAIL: A schema with a JSON syntax error (e.g., a trailing comma).
+    -->
+    <h1>Invalid JSON Syntax</h1>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Site with a syntax error",
+        "url": "https://example.com/"
+      }
+    </script>
+  </body>
+</html>

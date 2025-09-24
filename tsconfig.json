@@ -29,7 +29,11 @@
     "exactOptionalPropertyTypes": true,
 
     // Skip type checking for node_modules
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    // To allow importing the JSON file
+    "resolveJsonModule": true
+    // "esModuleInterop": true // is already set above
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "tests"]

@@ -11,6 +11,7 @@ import InternalLinksRule from './rules/InternalLinksRule'
 import LatestPackagesRule from './rules/LatestPackagesRule'
 import MailtoAwesomeRule from './rules/MailtoAwesomeRule'
 import NoJqueryRule from './rules/NoJqueryRule'
+import SchemaOrgJsonLdRule from './rules/SchemaOrgJsonLdRule'
 
 const plugin: Plugin = {
   name: 'nice-checkers-plugin',
@@ -23,6 +24,7 @@ const plugin: Plugin = {
     'nice-checkers/latest-packages': LatestPackagesRule,
     'nice-checkers/mailto-awesome': MailtoAwesomeRule,
     'nice-checkers/no-jquery': NoJqueryRule,
+    'nice-checkers/schema-org-json-ld': SchemaOrgJsonLdRule,
   },
 
   configs: {
@@ -35,6 +37,7 @@ const plugin: Plugin = {
         'nice-checkers/latest-packages': ['warn'],
         'nice-checkers/mailto-awesome': ['error'],
         'nice-checkers/no-jquery': ['error'],
+        'nice-checkers/schema-org-json-ld': ['error'],
       },
     },
   },

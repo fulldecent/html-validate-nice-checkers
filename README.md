@@ -443,6 +443,10 @@ The package uses GitHub Actions for CI/CD:
 - ✅ **Modern Tooling**: Built with tsup, tested with Vitest
 - ✅ **Comprehensive Testing**: High test coverage with realistic fixtures
 
+## Maintenance
+
+Periodically, load schemaorg-current-https.jsonld file from <https://schema.org/docs/developers.html> and save to src/vendor/shemaorg-current-https.jsonld. Ideally, the sponsors of Schema.org: Google, Inc., Yahoo, Inc., Microsoft Corporation and Yandex should main a NPM package for this file that we can depend on. This would allow our package manager to handle updates.
+
 ## Browser support
 
 This is a Node.js library designed for build-time HTML validation. For browser usage, ensure your bundler supports the module format you're using.
