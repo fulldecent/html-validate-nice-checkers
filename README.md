@@ -1,10 +1,8 @@
 # :cherry_blossom: Nice Checkers
 
-[![npm version](https://badge.fury.io/js/html-validate-nice-checkers.svg)](https://www.npmjs.com/package/html-validate-nice-checkers)
+[![npm version](https://badge.fury.io/js/@fulldecent/nice-checkers-plugin.svg)](https://www.npmjs.com/package/@fulldecent/nice-checkers)
 
-[![CI](https://github.com/fulldecent/html-validate-nice-checkers/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/html-validate-nice-checkers/actions/workflows/ci.yml)
-
-[![codecov](https://codecov.io/gh/fulldecent/html-validate-nice-checkers/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/html-validate-nice-checkers)
+[![CI](https://github.com/fulldecent/html-validate-nice-checkers/actions/workflows/ci.yml/badge.svg)](https://github.com/fulldecent/html-validate-nice-checkers/actions/workflows/ci.yml)
 
 An opinionated collection of essential HTML validation rules that promote best practices™ for web development. Use this plugin with [HTML-validate](https://html-validate.org/).
 
