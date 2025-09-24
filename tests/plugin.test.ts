@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import NiceCheckersPlugin from '../src/index.js'
+import NiceCheckersPlugin from '../src/index'
 
 const plugin = new NiceCheckersPlugin()
 

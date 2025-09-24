@@ -3,7 +3,7 @@ import { HtmlValidate, StaticConfigLoader } from 'html-validate'
 import { readFileSync, readdirSync, writeFileSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join, extname } from 'path'
-import NiceCheckersPlugin from '../src/index.js'
+import NiceCheckersPlugin from '../src/index'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

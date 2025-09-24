@@ -14,34 +14,15 @@ import { defineConfig } from 'tsup'
  * while maintaining type safety and IDE support.
  */
 export default defineConfig({
-  // Entry points - main package export
   entry: ['src/index.ts'],
-
-  // Output both ESM and CJS formats for maximum compatibility
-  format: ['cjs', 'esm'],
-
-  // Generate TypeScript declaration files
+  format: ['cjs', 'esm'], // Output both ESM and CJS formats for maximum compatibility
   dts: true,
-
-  // Clean output directory before build
   clean: true,
-
-  // Output directory
   outDir: 'dist',
-
-  // Generate source maps for debugging
   sourcemap: true,
-
-  // Don't bundle dependencies - keep as external requires/imports
-  bundle: false,
-
-  // Don't split code - keep modules separate
+  bundle: true,
   splitting: false,
-
-  // Minify for production
-  minify: false,
-
-  // Target modern Node.js
+  minify: true,
   target: 'es2020',
   platform: 'node',
 

@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-# Allow one concurrent deployment
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -14,7 +13,6 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [20.x, 22.x, 24.x] # All versions that are "active", "current" or "maintenance" support by Node.js
@@ -40,9 +38,6 @@ jobs:
 
       - name: Run type checking
         run: yarn lint
-
-      - name: Run tests
-        run: yarn test
 
       - name: Run tests with coverage
         run: yarn test:coverage
@@ -76,30 +71,29 @@ jobs:
       - name: Pack package
         run: yarn pack
 
-      - name: Find package file
+      - name: Identify Package File
+        id: package_file
         run: |
-          echo "Files in directory:"
-          ls -la *.tgz
-          PACKAGE_FILE="package.tgz"
-          echo "PACKAGE_FILE=$PACKAGE_FILE" >> $GITHUB_ENV
-          echo "Using package file: $PACKAGE_FILE"
+          PACKAGE_NAME=$(yarn pack)
+          echo "package_path=${PACKAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "Found package: ${PACKAGE_NAME}"
 
       - name: Test ESM import
         run: |
-          # Create test directory outside of workspace to avoid conflicts
+          # Create test dir in /tmp to avoid yarn workspace conflicts
           cd /tmp
-          mkdir test-esm
-          cd test-esm
+          mkdir -p test-esm && cd test-esm
 
+          # Create simple package.json
           cat > package.json << 'JSON'
-          {
-            "type": "module"
-          }
+          { "type": "module" }
           JSON
+          npm init -y > /dev/null
 
-          npm init -y
-          npm install $GITHUB_WORKSPACE/$PACKAGE_FILE
+          # Install the packed tarball from the workspace
+          npm install "${{ github.workspace }}/${{ steps.package_file.outputs.package_path }}"
 
+          # Create test script
           cat > test.mjs << 'JS'
           import plugin from 'html-validate-nice-checkers';
           console.log('✅ ESM import successful');
@@ -107,25 +101,23 @@ jobs:
           console.log('Plugin rules:', Object.keys(plugin.rules || {}));
           console.log('Plugin configs:', Object.keys(plugin.configs || {}));
           JS
-
           node test.mjs
 
       - name: Test CJS require
         run: |
-          # Create test directory outside of workspace to avoid conflicts
           cd /tmp
-          mkdir test-cjs
-          cd test-cjs
+          mkdir -p test-cjs && cd test-cjs
 
-          npm init -y
-          npm install $GITHUB_WORKSPACE/$PACKAGE_FILE
+          npm init -y > /dev/null
+          npm install "${{ github.workspace }}/${{ steps.package_file.outputs.package_path }}"
 
           cat > test.cjs << 'JS'
           const plugin = require('html-validate-nice-checkers');
           console.log('✅ CJS require successful');
-          console.log('Plugin name:', plugin.default?.name || plugin.name);
-          console.log('Plugin rules:', Object.keys(plugin.default?.rules || plugin.rules || {}));
-          console.log('Plugin configs:', Object.keys(plugin.default?.configs || plugin.configs || {}));
+          // CJS might require accessing the default export
+          const actualPlugin = plugin.default || plugin;
+          console.log('Plugin name:', actualPlugin.name);
+          console.log('Plugin rules:', Object.keys(actualPlugin.rules || {}));
+          console.log('Plugin configs:', Object.keys(actualPlugin.configs || {}));
           JS
-
           node test.cjs

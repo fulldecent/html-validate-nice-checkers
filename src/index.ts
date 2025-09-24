@@ -4,13 +4,13 @@
  */
 
 import type { Plugin, ConfigData, RuleConstructor } from 'html-validate'
-import CanonicalLinkRule from './rules/CanonicalLinkRule.js'
-import ExternalLinksRule from './rules/ExternalLinksRule.js'
-import HttpsLinksRule from './rules/HttpsLinksRule.js'
-import InternalLinksRule from './rules/InternalLinksRule.js'
-import LatestPackagesRule from './rules/LatestPackagesRule.js'
-import MailtoAwesomeRule from './rules/MailtoAwesomeRule.js'
-import NoJqueryRule from './rules/NoJqueryRule.js'
+import CanonicalLinkRule from './rules/CanonicalLinkRule'
+import ExternalLinksRule from './rules/ExternalLinksRule'
+import HttpsLinksRule from './rules/HttpsLinksRule'
+import InternalLinksRule from './rules/InternalLinksRule'
+import LatestPackagesRule from './rules/LatestPackagesRule'
+import MailtoAwesomeRule from './rules/MailtoAwesomeRule'
+import NoJqueryRule from './rules/NoJqueryRule'
 
 /**
  * The Nice Checker plugin exposes and defaults to rules that make your website
