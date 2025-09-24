@@ -91,7 +91,7 @@ jobs:
 
           # Create test script
           cat > test.mjs << 'JS'
-          import plugin from 'html-validate-nice-checkers';
+          import plugin from 'nice-checkers-plugin';
           console.log('✅ ESM import successful');
           console.log('Plugin name:', plugin.name);
           console.log('Plugin rules:', Object.keys(plugin.rules || {}));
@@ -108,7 +108,7 @@ jobs:
           npm install "${{ github.workspace }}/package.tgz"
 
           cat > test.cjs << 'JS'
-          const plugin = require('html-validate-nice-checkers');
+          const plugin = require('nice-checkers-plugin');
           console.log('✅ CJS require successful');
           // CJS might require accessing the default export
           const actualPlugin = plugin.default || plugin;
