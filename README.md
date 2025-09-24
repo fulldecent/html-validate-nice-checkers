@@ -217,7 +217,7 @@ Reports insecure HTTP links that are accessible via HTTPS, encouraging the use o
 }
 ````
 
-### `nice/internal-links`
+### `nice-checkers/internal-links`
 
 Validates that all internal links point to existing files in your project.
 
@@ -312,7 +312,7 @@ Ensures that package assets loaded from CDNs (like jsDelivr) are using the lates
 }
 ```
 
-### `nice/mailto-awesome`
+### `nice-checkers/mailto-awesome`
 
 Enforces that mailto links contain specific parameters to improve user experience.
 
@@ -353,7 +353,7 @@ Enforces that mailto links contain specific parameters to improve user experienc
 
 - `requiredParameters`: Array of parameters that must be present (e.g., `["subject", "body", "cc"]`)
 
-### `nice/no-jquery`
+### `nice-checkers/no-jquery`
 
 Disallows the use of jQuery, encouraging modern vanilla JavaScript or more modern frameworks.
 

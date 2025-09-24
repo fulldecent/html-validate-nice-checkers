@@ -72,6 +72,27 @@ describe('fixture validation against required output', () => {
         plugins: [plugin],
         extends: ['nice-checkers:recommended'],
         rules: {
+          // Disable caching for tests to ensure consistent results
+          'nice/external-links': [
+            'error',
+            {
+              cacheExpiryFoundSeconds: 0,
+              cacheExpiryNotFoundSeconds: 0,
+            },
+          ],
+          'nice/https-links': [
+            'error',
+            {
+              cacheExpiryFoundSeconds: 0,
+              cacheExpiryNotFoundSeconds: 0,
+            },
+          ],
+          'nice/latest-packages': [
+            'error',
+            {
+              cacheExpirySeconds: 0,
+            },
+          ],
           'nice-checkers/internal-links': [
             'error',
             {
