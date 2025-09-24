@@ -1,0 +1,44 @@
+## JUST FOR THIS PROJECT
+
+/tests/fixtures/required-reports.json
+/tests/fixtures/actual-reports.json
+
+## NORMAL THINGS
+
+# Dependencies
+
+node_modules/
+.yarn/
+.pnp.*
+
+# Build outputs
+
+dist/
+coverage/
+*.tsbuildinfo
+
+# Package files
+
+*.tgz
+yarn.lock
+package-lock.json
+
+# IDE
+
+.vscode/
+.idea/
+
+# OS
+
+.DS_Store
+Thumbs.db
+
+# Logs
+
+*.log
+npm-debug.log*
+
+# Temporary
+
+.tmp/
+.cache/

@@ -1,0 +1,14 @@
+## Specific to this project
+/tests/fixtures/actual-reports.json
+/cache
+/dist
+/node_modules
+
+## Geniric Yarn ignore
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+#!.yarn/sdks # 2025-09-23 @fulldecent: Yarn project should not recommend this
+!.yarn/versions

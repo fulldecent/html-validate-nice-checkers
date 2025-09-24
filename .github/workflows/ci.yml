@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Check code formatting
+        run: yarn format:check
+
+      - name: Run type checking
+        run: yarn lint
+
+      - name: Run tests
+        run: yarn test
+
+      - name: Run tests with coverage
+        run: yarn test:coverage
+
+      - name: Build package
+        run: yarn build
+
+      - name: Check package exports
+        run: npx @arethetypeswrong/cli
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: matrix.node-version == '20.x'
+        with:
+          file: ./coverage/clover.xml
+          fail_ci_if_error: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  # Test package installation and imports
+  package-test:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'yarn'
+
+      - name: Install dependencies and build
+        run: |
+          yarn install --immutable
+          yarn build
+
+      - name: Pack package
+        run: yarn pack
+
+      - name: Test ESM import
+        run: |
+          mkdir -p test-esm
+          cd test-esm
+          cat > package.json << 'JSON'
+          {
+            "type": "module"
+          }
+          JSON
+          yarn init -y
+          yarn add ../html-validate-nice-checkers-v*.tgz
+          cat > test.mjs << 'JS'
+          import plugin from 'html-validate-nice-checkers';
+          console.log('ESM import successful');
+          console.log('Plugin name:', plugin.name);
+          console.log('Plugin rules:', Object.keys(plugin.rules || {}));
+          console.log('Plugin configs:', Object.keys(plugin.configs || {}));
+          JS
+          node test.mjs
+
+      - name: Test CJS require
+        run: |
+          mkdir -p test-cjs
+          cd test-cjs
+          yarn init -y
+          yarn add ../html-validate-nice-checkers-v*.tgz
+          cat > test.cjs << 'JS'
+          const plugin = require('html-validate-nice-checkers');
+          console.log('CJS require successful');
+          console.log('Plugin name:', plugin.default?.name || plugin.name);
+          console.log('Plugin rules:', Object.keys(plugin.default?.rules || plugin.rules || {}));
+          console.log('Plugin configs:', Object.keys(plugin.default?.configs || plugin.configs || {}));
+          JS
+          node test.cjs
