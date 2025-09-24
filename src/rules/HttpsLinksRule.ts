@@ -27,7 +27,7 @@ interface RuleOptions {
 const defaults: RuleOptions = {
   cacheExpiryFoundSeconds: 30 * 24 * 60 * 60, // Default: 30 days
   cacheExpiryNotFoundSeconds: 3 * 24 * 60 * 60, // Default: 3 days
-  timeoutSeconds: 10,
+  timeoutSeconds: 5,
   cacheDatabasePath: 'cache/https-availability.db',
 }
 
@@ -100,7 +100,7 @@ export default class HttpsLinksRule extends Rule<void, RuleOptions> {
     const escapedUrl = shellEscape([httpsUrl])
 
     // Use --fail to make curl exit with an error on 4xx/5xx responses.
-    const command = `curl --head --silent --fail --location --max-time ${this.options.timeoutSeconds} ${escapedUrl} > /dev/null 2>&1`
+    const command = `curl --head --silent --fail --no-location --max-time ${this.options.timeoutSeconds} ${escapedUrl} > /dev/null 2>&1`
 
     try {
       execSync(command)

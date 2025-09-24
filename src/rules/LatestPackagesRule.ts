@@ -26,7 +26,7 @@ interface RuleOptions {
 
 const defaults: RuleOptions = {
   cacheExpirySeconds: 2 * 24 * 60 * 60, // Default: 2 days
-  timeoutSeconds: 10,
+  timeoutSeconds: 5,
   cacheDatabasePath: 'cache/latest-packages.db',
   skipUrlPatterns: ['googletagmanager.com'],
 }
@@ -108,7 +108,7 @@ export default class LatestPackagesRule extends Rule<void, RuleOptions> {
     const packageVersion = match[2]
     const apiUrl = `https://data.jsdelivr.com/v1/package/npm/${packageName}`
     const escapedUrl = shellEscape([apiUrl])
-    const command = `curl --silent --fail --location --max-time ${this.options.timeoutSeconds} ${escapedUrl}`
+    const command = `curl --silent --fail --no-location --max-time ${this.options.timeoutSeconds} ${escapedUrl}`
 
     try {
       const result = execSync(command).toString()
