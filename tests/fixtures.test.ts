@@ -73,21 +73,21 @@ describe('fixture validation against required output', () => {
         extends: ['nice-checkers-plugin:recommended'],
         rules: {
           // Disable caching for tests to ensure consistent results
-          'nice/external-links': [
+          'nice-checkers/external-links': [
             'error',
             {
               cacheExpiryFoundSeconds: 0,
               cacheExpiryNotFoundSeconds: 0,
             },
           ],
-          'nice/https-links': [
+          'nice-checkers/https-links': [
             'error',
             {
               cacheExpiryFoundSeconds: 0,
               cacheExpiryNotFoundSeconds: 0,
             },
           ],
-          'nice/latest-packages': [
+          'nice-checkers/latest-packages': [
             'error',
             {
               cacheExpirySeconds: 0,
@@ -107,7 +107,8 @@ describe('fixture validation against required output', () => {
       beforeAll(async () => {
         for (const filePath of fixtureFiles) {
           const report = await htmlvalidate.validateFile(filePath)
-          actualOutputs[filePath.replace(process.cwd() + '/', '')] = report.results[0].messages
+          actualOutputs[filePath.replace(process.cwd() + '/', '')] =
+            report.results[0]?.messages ?? []
         }
         writeFileSync(
           join(fixturesDir, 'actual-reports.json'),
