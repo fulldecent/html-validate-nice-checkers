@@ -32,8 +32,8 @@ export default defineConfig({
     dts: format === 'cjs' ? '.d.cts' : '.d.ts',
   }),
 
-  // Enable CommonJS interop
-  cjsInterop: true,
+  // Disable faulty CommonJS interop that adds `module.exports = exports.default`
+  cjsInterop: false,
 
   // Keep function names for better debugging
   keepNames: true,
