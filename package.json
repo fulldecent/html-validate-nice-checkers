@@ -52,7 +52,7 @@
     "format:check": "prettier --check .",
     "format:staged": "prettier --write",
     "clean": "rimraf dist",
-    "prepublishOnly": "yarn clean && yarn lint && yarn format:check && yarn test && yarn build",
+    "prepublishOnly": "yarn clean && yarn format:check && yarn lint && yarn test && yarn build",
     "dev": "yarn build:watch"
   },
   "devDependencies": {

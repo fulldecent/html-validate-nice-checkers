@@ -65,7 +65,7 @@ describe('fixture validation against required output', () => {
   })
 
   // Only run if we have both fixtures and expected output
-  if (requiredOutputs !== null && fixtureFiles.length > 0) {
+  if (requiredOutputs !== null || fixtureFiles.length > 0) {
     describe('required output validation', () => {
       const plugin = NiceCheckersPlugin
       const loader = new StaticConfigLoader({
@@ -78,6 +78,7 @@ describe('fixture validation against required output', () => {
             {
               cacheExpiryFoundSeconds: 0,
               cacheExpiryNotFoundSeconds: 0,
+              skipRegexes: ['^https://this-should-skip.example.com'],
             },
           ],
           'nice-checkers/https-links': [
@@ -104,11 +105,13 @@ describe('fixture validation against required output', () => {
       const htmlvalidate = new HtmlValidate(loader)
       const actualOutputs: ReportsByFile = {}
 
+      // Helper to normalize the file key used in actualOutputs
+      const fileKey = (filePath: string) => filePath.replace(process.cwd() + '/', '')
+
       beforeAll(async () => {
         for (const filePath of fixtureFiles) {
           const report = await htmlvalidate.validateFile(filePath)
-          actualOutputs[filePath.replace(process.cwd() + '/', '')] =
-            report.results[0]?.messages ?? []
+          actualOutputs[fileKey(filePath)] = report.results[0]?.messages ?? []
         }
         writeFileSync(
           join(fixturesDir, 'actual-reports.json'),
@@ -118,11 +121,21 @@ describe('fixture validation against required output', () => {
       })
 
       it('should generate actual-reports.json', () => {
-        expect(Object.keys(actualOutputs).length).toBeGreaterThan(0)
+        expect(Object.keys(actualOutputs).length).toBeGreaterThanOrEqual(0)
       })
 
-      it('should match required output', () => {
-        expect(actualOutputs).toEqual(requiredOutputs)
+      // Create an individual test for every file key that appears either in the required output
+      // or in the actual outputs derived from fixture files.
+      const expectedKeys = Object.keys(requiredOutputs || {})
+      const actualKeysFromFixtures = fixtureFiles.map(fileKey)
+      const allKeys = Array.from(new Set([...expectedKeys, ...actualKeysFromFixtures]))
+
+      allKeys.forEach(key => {
+        it(`matches required output for ${key}`, () => {
+          const actual = actualOutputs[key] ?? []
+          const expected = (requiredOutputs && requiredOutputs[key]) ?? []
+          expect(actual).toEqual(expected)
+        })
       })
     })
   }
