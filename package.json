@@ -1,6 +1,6 @@
 {
   "name": "@fulldecent/nice-checkers-plugin",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "HTML-validate plugin and rules you should always use",
   "author": "William Entriken",
   "license": "MIT",
@@ -52,7 +52,7 @@
     "format:check": "prettier --check .",
     "format:staged": "prettier --write",
     "clean": "rimraf dist",
-    "prepublishOnly": "yarn clean && yarn lint && yarn format:check && yarn test && yarn build",
+    "prepublishOnly": "yarn clean && yarn format:check && yarn lint && yarn test && yarn build",
     "dev": "yarn build:watch"
   },
   "devDependencies": {

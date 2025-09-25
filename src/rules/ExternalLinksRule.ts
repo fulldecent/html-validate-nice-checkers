@@ -20,7 +20,7 @@ interface UrlCacheRow {
 
 interface RuleOptions {
   proxyUrl: string
-  skipUrls: string[]
+  skipRegexes: string[]
   cacheExpiryFoundSeconds: number
   cacheExpiryNotFoundSeconds: number
   timeoutSeconds: number
@@ -30,7 +30,7 @@ interface RuleOptions {
 
 const defaults: RuleOptions = {
   proxyUrl: '',
-  skipUrls: [],
+  skipRegexes: [],
   cacheExpiryFoundSeconds: 30 * 24 * 60 * 60, // Default: 30 days
   cacheExpiryNotFoundSeconds: 3 * 24 * 60 * 60, // Default: 3 days
   timeoutSeconds: 5,
@@ -50,13 +50,13 @@ function normalizeUrl(url: string): string {
 }
 
 export default class ExternalLinksRule extends Rule<void, RuleOptions> {
-  private readonly skipUrlsRegex: RegExp[] = []
+  private readonly skipRegexesCompiled: RegExp[]
   private db!: Database.Database
 
   public constructor(options: Partial<RuleOptions>) {
     /* assign default values if not provided by user */
     super({ ...defaults, ...options })
-    this.skipUrlsRegex = this.initializeSkipRegex()
+    this.skipRegexesCompiled = this.compileRegexes(this.options.skipRegexes)
   }
 
   public static override schema(): SchemaObject {
@@ -65,7 +65,7 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
         type: 'string',
         description: 'URL of a proxy server to check external links.',
       },
-      skipUrls: {
+      skipRegexes: {
         type: 'array',
         items: {
           type: 'string',
@@ -126,18 +126,14 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
     return db
   }
 
-  private initializeSkipRegex(): RegExp[] {
-    const patterns = this.options?.skipUrls
-    if (!Array.isArray(patterns)) {
-      return []
-    }
+  private compileRegexes(patterns: string[]): RegExp[] {
     return patterns
       .map(pattern => {
         try {
           return new RegExp(pattern)
         } catch (e) {
           console.error(
-            `[html-validate-nice-checkers] Invalid regex pattern in 'skipUrls' configuration: "${pattern}"`
+            `[html-validate-nice-checkers] Invalid regex pattern in 'skipRegexes' configuration: "${pattern}"`
           )
           return null
         }
@@ -202,7 +198,7 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
       return
     }
 
-    if (this.skipUrlsRegex.some(regex => regex.test(url))) {
+    if (this.skipRegexesCompiled.some(regex => regex.test(url))) {
       return
     }
 
