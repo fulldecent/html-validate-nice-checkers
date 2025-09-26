@@ -68,5 +68,25 @@
         "url": "https://example.com/"
       }
     </script>
+    <!--
+      6. PASS: a top-level @graph, instead of a single object with a @type, is valid.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "name": "Jane Doe",
+            "url": "https://www.example.com"
+          },
+          {
+            "@type": "WebSite",
+            "name": "Example Corp",
+            "url": "https://www.example.com"
+          }
+        ]
+      }
+    </script>
   </body>
 </html>

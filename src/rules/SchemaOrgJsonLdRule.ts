@@ -109,9 +109,17 @@ export default class SchemaOrgJsonLdRule extends Rule {
       return
     }
 
+    // Handle the @graph pattern
+    if (isTopLevel && data['@graph'] && Array.isArray(data['@graph'])) {
+      // If @graph exists at the top level, we validate its children as top-level entities.
+      // The container object itself doesn't need a @type.
+      this.validateSchemaObject(data['@graph'], node, true)
+      return // Stop processing the container object here.
+    }
+
     const typeValue = data['@type']
 
-    // The @type property is only strictly required for a top-level object.
+    // The @type property is required for a top-level entity.
     if (isTopLevel && !typeValue) {
       this.report({
         node,
