@@ -55,7 +55,8 @@ export default class MailtoAwesomeRule extends Rule<void, RuleOptions> {
     }
 
     try {
-      const url = new URL(href)
+      const semanticHref = href.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+      const url = new URL(semanticHref)
       const missingParams = this.options.requiredParameters.filter(param => {
         return !url.searchParams.has(param)
       })
