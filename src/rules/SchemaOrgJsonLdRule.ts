@@ -1,5 +1,9 @@
-import { type RuleDocumentation, type DOMReadyEvent, Rule, type HtmlElement } from 'html-validate'
-import { load as cheerioLoad } from 'cheerio'
+import {
+  type RuleDocumentation,
+  type ElementReadyEvent,
+  Rule,
+  type HtmlElement,
+} from 'html-validate'
 import schema from '../vendor/schemaorg-current-https.json' assert { type: 'json' }
 
 interface SchemaDef {
@@ -56,46 +60,37 @@ export default class SchemaOrgJsonLdRule extends Rule {
   }
 
   public override setup(): void {
-    // Wait for the entire document to be parsed.
-    this.on('dom:ready', (event: DOMReadyEvent) => {
-      const { document, source } = event
-      const selector = 'script[type="application/ld+json"]'
+    this.on('element:ready', (event: ElementReadyEvent) => this.elementReady(event))
+  }
 
-      // Use html-validate's selector engine to see if this file has matches or
-      // not. And also use the nodes for reporting later.
-      const scriptNodes = document.querySelectorAll(selector)
+  private elementReady(event: ElementReadyEvent): void {
+    const { target } = event
 
-      // If no matching script tags are found, there's nothing to do.
-      if (scriptNodes.length === 0) {
-        return
-      }
+    // This rule only applies to <script type="application/ld+json"> tags.
+    if (target.tagName !== 'script') {
+      return
+    }
 
-      // We use Cheerio because html-validate's parser fails to provide the
-      // text content of script tags. This is a robust workaround.
-      const $ = cheerioLoad(source.data)
+    const typeAttr = target.getAttribute('type')?.value
+    if (typeAttr !== 'application/ld+json') {
+      return
+    }
 
-      // Find the same script tags using Cheerio to extract their content.
-      const cheerioScripts = $(selector)
+    // Access the text content directly from the element.
+    const content = target.textContent
+    if (!content || content.trim() === '') {
+      return
+    }
 
-      cheerioScripts.each((index, cheerioElement) => {
-        // Get the text content from the Cheerio element.
-        const content = $(cheerioElement).text()
-        if (!content || content.trim() === '') return
+    let data: any
+    try {
+      data = JSON.parse(content)
+    } catch (error: any) {
+      this.report({ node: target, message: `Invalid JSON syntax: ${error.message}` })
+      return
+    }
 
-        // Get the corresponding html-validate node for reporting.
-        // This links the content from Cheerio back to the source location from html-validate.
-        const reportNode = scriptNodes[index]!
-
-        let data: any
-        try {
-          data = JSON.parse(content)
-        } catch (error: any) {
-          this.report({ node: reportNode, message: `Invalid JSON syntax: ${error.message}` })
-          return
-        }
-        this.validateSchemaObject(data, reportNode, true)
-      })
-    })
+    this.validateSchemaObject(data, target, true)
   }
 
   private validateSchemaObject(data: any, node: HtmlElement, isTopLevel: boolean): void {
