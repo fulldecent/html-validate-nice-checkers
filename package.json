@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fulldecent/html-validate-nice-checkers/.git"
+    "url": "https://github.com/fulldecent/html-validate-nice-checkers"
   },
   "keywords": [
     "html-validate",
