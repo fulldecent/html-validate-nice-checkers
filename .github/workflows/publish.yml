@@ -7,6 +7,9 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -31,7 +34,8 @@ jobs:
       - name: Build package
         run: yarn build
 
-      - name: Publish to NPM
-        run: |
-          yarn config set npmAuthToken ${{ secrets.NPM_TOKEN }}
-          yarn npm publish
+      - name: Ensure latest npm for trusted publishing
+        run: npm install -g npm@latest
+
+      - name: Publish to NPM (Trusted Publishing)
+        run: npm publish --access public
