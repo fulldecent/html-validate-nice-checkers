@@ -6,7 +6,7 @@ An opinionated collection of essential HTML validation rules that promote best p
 
 ## Features
 
-- :white_check_mark: **Turnkey validation**: 7 rules covering SEO, security, accessibility, and best practices
+- :white_check_mark: **Turnkey validation**: 8 rules covering SEO, security, accessibility, and best practices
 - :white_check_mark: **TypeScript**: full type definitions included
 - :warning: **Dual module support**: works with both ESM (`import`) and CJS (`require`) (known issue: ESM and CommonJS builds are [sometimes not building correctly](https://github.com/fulldecent/html-validate-nice-checkers/issues/6))
 - :white_check_mark: **Tree shakeable**: import only what you need
@@ -47,6 +47,39 @@ This example assumes you are using the .htmlvalidate.mjs configuration flavor. H
 ## Rules
 
 All rules are enabled by default when you extend from `nice-checkers-plugin:recommended`. Find introductions and configuration options for each rule below.
+
+### `nice-checkers/alternate-language-url`
+
+Ensures that all alternate language links (`<link rel="alternate" hreflang="...">`) use fully qualified URLs with protocol (https://). This follows Google's best practices for international and multilingual websites.
+
+According to [Google's documentation on localized versions](https://developers.google.com/search/docs/specialty/international/localized-versions), alternate language links must use fully qualified URLs:
+
+> "The value of the hreflang attribute identifies the language (in ISO 639-1 format) and optionally a region (in ISO 3166-1 Alpha 2 format) of an alternate URL. **The href attribute contains the full URL of the alternate version.**"
+
+Using relative or protocol-relative URLs can cause search engines to misinterpret or ignore your international content signals.
+
+```diff
+- <!-- Incorrect: relative path -->
+- <link rel="alternate" hreflang="es" href="/es/page" />
+- <link rel="alternate" hreflang="fr" href="../fr/page.html" />
++ <!-- Correct: fully qualified URL -->
++ <link rel="alternate" hreflang="es" href="https://example.com/es/page" />
++ <link rel="alternate" hreflang="fr" href="https://example.fr/page" />
+```
+
+#### Configuration
+
+```json
+{
+  "rules": {
+    "nice-checkers/alternate-language-url": "error"
+  }
+}
+```
+
+#### Configuration options
+
+This rule has no configurable options.
 
 ### `nice-checkers/canonical-link`
 

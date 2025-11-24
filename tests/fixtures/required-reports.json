@@ -191,5 +191,18 @@
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#schema-org-json-ld"
     }
   ],
+  "tests/fixtures/AlternateLanguageUrlRule-violation.html": [
+    {
+      "ruleId": "nice-checkers/alternate-language-url",
+      "severity": 2,
+      "message": "Alternate language link must use a fully qualified URL (with protocol://), found: /no-errors.html",
+      "offset": 260,
+      "line": 8,
+      "column": 6,
+      "size": 4,
+      "selector": "html > head > link:nth-child(4)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+    }
+  ],
   "tests/fixtures/no-errors.html": []
 }

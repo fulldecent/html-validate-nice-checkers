@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Multilingual Page</title>
+    <link rel="canonical" href="https://httpbin.io/status/200" />
+    <!-- Violation: alternate language link with relative path (missing ://) -->
+    <link rel="alternate" hreflang="es" href="/no-errors.html" />
+    <!-- Correct: fully qualified URL -->
+    <link rel="alternate" hreflang="fr" href="https://httpbin.io/status/200" />
+  </head>
+
+  <body>
+    <h1>This page has alternate language links</h1>
+    <p>One uses a local path (violation), one uses a fully qualified URL (correct).</p>
+  </body>
+</html>
