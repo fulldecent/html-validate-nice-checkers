@@ -187,6 +187,15 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
       return
     }
 
+    // Skip canonical and alternate language links as they point to the site itself
+    // and may reference not-yet-published URLs during development/preview
+    if (tagName === 'link') {
+      const rel = target.getAttribute('rel')?.value
+      if (rel === 'canonical' || rel === 'alternate') {
+        return
+      }
+    }
+
     const rawUrl = target.getAttribute(urlAttribute)?.value
     if (typeof rawUrl !== 'string' || !rawUrl) {
       return
