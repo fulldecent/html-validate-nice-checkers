@@ -18,6 +18,11 @@ interface UrlCacheRow {
   time: number
 }
 
+interface ManuallyReviewedUrl {
+  url: string
+  lastApprovedTime: number
+}
+
 interface RuleOptions {
   proxyUrl: string
   skipRegexes: string[]
@@ -26,6 +31,8 @@ interface RuleOptions {
   timeoutSeconds: number
   cacheDatabasePath: string
   userAgent: string
+  manuallyReviewedPath: string
+  manuallyReviewedExpirySeconds: number
 }
 
 const defaults: RuleOptions = {
@@ -37,6 +44,8 @@ const defaults: RuleOptions = {
   cacheDatabasePath: 'cache/external-links.db',
   userAgent:
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.9999.999 Safari/537.36',
+  manuallyReviewedPath: '',
+  manuallyReviewedExpirySeconds: 365 * 24 * 60 * 60, // Default: 365 days (1 year)
 }
 
 function normalizeUrl(url: string): string {
@@ -51,12 +60,14 @@ function normalizeUrl(url: string): string {
 
 export default class ExternalLinksRule extends Rule<void, RuleOptions> {
   private readonly skipRegexesCompiled: RegExp[]
+  private readonly manuallyReviewedUrls: Map<string, number>
   private db!: Database.Database
 
   public constructor(options: Partial<RuleOptions>) {
     /* assign default values if not provided by user */
     super({ ...defaults, ...options })
     this.skipRegexesCompiled = this.compileRegexes(this.options.skipRegexes)
+    this.manuallyReviewedUrls = this.loadManuallyReviewedUrls()
   }
 
   public static override schema(): SchemaObject {
@@ -91,6 +102,15 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
       userAgent: {
         type: 'string',
         description: 'User-Agent string to use for requests.',
+      },
+      manuallyReviewedPath: {
+        type: 'string',
+        description: 'Path to CSV file containing manually reviewed URLs with approval timestamps.',
+      },
+      manuallyReviewedExpirySeconds: {
+        type: 'number',
+        description:
+          'Number of seconds before a manually reviewed URL approval expires (default: 365 days).',
       },
     }
   }
@@ -139,6 +159,63 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
         }
       })
       .filter((regex): regex is RegExp => regex !== null)
+  }
+
+  private loadManuallyReviewedUrls(): Map<string, number> {
+    const urlMap = new Map<string, number>()
+
+    if (!this.options.manuallyReviewedPath) {
+      return urlMap
+    }
+
+    try {
+      if (!fs.existsSync(this.options.manuallyReviewedPath)) {
+        return urlMap
+      }
+
+      const csvContent = fs.readFileSync(this.options.manuallyReviewedPath, 'utf-8')
+      const lines = csvContent.split('\n')
+
+      for (let i = 1; i < lines.length; i++) {
+        // Skip header and empty lines
+        const line = lines[i].trim()
+        if (!line) continue
+
+        // Simple CSV parsing: split by comma and handle quoted fields
+        const parts = line.split(',')
+        if (parts.length < 2) continue
+
+        const url = parts[0].replace(/^"|"$/g, '').trim()
+        const timestampStr = parts[1].replace(/^"|"$/g, '').trim()
+
+        if (!url || !timestampStr) continue
+
+        const timestamp = parseInt(timestampStr, 10)
+        if (isNaN(timestamp)) continue
+
+        urlMap.set(normalizeUrl(url), timestamp)
+      }
+    } catch (e) {
+      console.error(
+        `[html-validate-nice-checkers] Error reading manually reviewed URLs from "${this.options.manuallyReviewedPath}": ${e}`
+      )
+    }
+
+    return urlMap
+  }
+
+  private isManuallyApproved(url: string): boolean {
+    const normalizedUrl = normalizeUrl(url)
+    const approvedTime = this.manuallyReviewedUrls.get(normalizedUrl)
+
+    if (!approvedTime) {
+      return false
+    }
+
+    const currentTime = Math.floor(Date.now() / 1000)
+    const expiryTime = approvedTime + this.options.manuallyReviewedExpirySeconds
+
+    return currentTime < expiryTime
   }
 
   private performCheck(originalUrl: string, element: HtmlElement, requestUrl?: string): void {
@@ -208,6 +285,11 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
     }
 
     if (this.skipRegexesCompiled.some(regex => regex.test(url))) {
+      return
+    }
+
+    // Check if URL is manually approved
+    if (this.isManuallyApproved(url)) {
       return
     }
 

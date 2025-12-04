@@ -13,6 +13,16 @@ type ReportsByFile = {
   [filePath: string]: object[]
 }
 
+// Generate a fresh CSV with current timestamp to avoid expiration issues
+function generateManuallyReviewedCSV(): void {
+  const currentTimestamp = Math.floor(Date.now() / 1000)
+  const csvContent = `url,last_approved_timestamp
+https://example.com/manually-approved-link,${currentTimestamp}
+https://anti-scraping-site.example.com/page,${currentTimestamp}
+`
+  writeFileSync(join(fixturesDir, 'external-links-manually-reviewed.csv'), csvContent, 'utf-8')
+}
+
 // Read expected output
 function getRequiredReports(): ReportsByFile | null {
   try {
@@ -67,6 +77,9 @@ describe('fixture validation against required output', () => {
   // Only run if we have both fixtures and expected output
   if (requiredOutputs !== null || fixtureFiles.length > 0) {
     describe('required output validation', () => {
+      // Generate fresh CSV with current timestamp before running tests
+      generateManuallyReviewedCSV()
+
       const plugin = NiceCheckersPlugin
       const loader = new StaticConfigLoader({
         plugins: [plugin],
@@ -78,7 +91,14 @@ describe('fixture validation against required output', () => {
             {
               cacheExpiryFoundSeconds: 0,
               cacheExpiryNotFoundSeconds: 0,
-              skipRegexes: ['^https://this-should-skip.example.com'],
+              skipRegexes: [
+                '^https://this-should-skip.example.com',
+                'dont-check-this\\.example\\.com',
+                'https://x\\.com/',
+                'https://www\\.linkedin\\.com/',
+              ],
+              manuallyReviewedPath: join(fixturesDir, 'external-links-manually-reviewed.csv'),
+              manuallyReviewedExpirySeconds: 365 * 24 * 60 * 60, // 1 year
             },
           ],
           'nice-checkers/https-links': [

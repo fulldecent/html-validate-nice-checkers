@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Test: Skip Regexes Should Work</title>
+    <link rel="canonical" href="https://example.com/page" />
+  </head>
+
+  <body>
+    <p>These links should be skipped by the skipRegexes configuration:</p>
+    <a href="https://x.com/someuser">Twitter/X link (should be skipped)</a>
+    <a href="https://www.linkedin.com/in/someone">LinkedIn link (should be skipped)</a>
+    <a href="https://dont-check-this.example.com/page">Domain to skip (should be skipped)</a>
+
+    <p>This link should still be validated:</p>
+    <a href="https://httpbin.io/status/200">Should be checked and pass</a>
+  </body>
+</html>
