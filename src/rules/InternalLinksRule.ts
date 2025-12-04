@@ -64,9 +64,33 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
       return this.fileExistsCache.get(filePath) as boolean
     }
 
-    const exists = fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()
-    this.fileExistsCache.set(filePath, exists)
-    return exists
+    if (!fs.existsSync(filePath)) {
+      this.fileExistsCache.set(filePath, false)
+      return false
+    }
+
+    if (!fs.lstatSync(filePath).isFile()) {
+      this.fileExistsCache.set(filePath, false)
+      return false
+    }
+
+    // Check case sensitivity by comparing with actual directory listing
+    // This prevents issues where macOS treats /abc.webp and /AbC.webp as the same
+    // but Linux would treat them differently
+    try {
+      const dirPath = path.dirname(filePath)
+      const requestedBasename = path.basename(filePath)
+
+      // Read actual directory contents to get exact case
+      const actualFiles = fs.readdirSync(dirPath)
+      const exists = actualFiles.includes(requestedBasename)
+
+      this.fileExistsCache.set(filePath, exists)
+      return exists
+    } catch (e) {
+      this.fileExistsCache.set(filePath, false)
+      return false
+    }
   }
 
   private checkLink(internalLink: string, element: HtmlElement): void {

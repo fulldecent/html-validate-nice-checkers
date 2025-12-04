@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Test: Case Sensitive Internal Links</title>
+    <link rel="canonical" href="https://example.com/page" />
+  </head>
+
+  <body>
+    <p>This link has correct case and should pass:</p>
+    <a href="no-errors.html">Correct case - should pass</a>
+
+    <p>This link has wrong case and should fail (even on macOS):</p>
+    <a href="No-Errors.html">Wrong case - should fail</a>
+  </body>
+</html>
