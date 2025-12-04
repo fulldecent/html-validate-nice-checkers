@@ -154,15 +154,40 @@ This allows you to validate your HTML before publishing, even when the canonical
 
 ### Configuration options
 
-| Option                       | Type       | Default                                                   | Description                                             |
-| ---------------------------- | ---------- | --------------------------------------------------------- | ------------------------------------------------------- |
-| `proxyUrl`                   | `string`   | `""`                                                      | Proxy URL to use for HTTP requests                      |
-| `skipRegexes`                | `string[]` | `[]`                                                      | Array of regex patterns for URLs to skip checking       |
-| `cacheExpiryFoundSeconds`    | `number`   | `2592000`                                                 | Cache duration for successful checks (default: 30 days) |
-| `cacheExpiryNotFoundSeconds` | `number`   | `259200`                                                  | Cache duration for failed checks (default: 3 days)      |
-| `timeoutSeconds`             | `number`   | `5`                                                       | Request timeout in seconds                              |
-| `cacheDatabasePath`          | `string`   | `"cache/external-links.db"`                               | Path to the cache database file                         |
-| `userAgent`                  | `string`   | `"Mozilla/5.0 (compatible; html-validate-nice-checkers)"` | User agent string for HTTP requests                     |
+| Option                          | Type       | Default                                                   | Description                                                |
+| ------------------------------- | ---------- | --------------------------------------------------------- | ---------------------------------------------------------- |
+| `proxyUrl`                      | `string`   | `""`                                                      | Proxy URL to use for HTTP requests                         |
+| `skipRegexes`                   | `string[]` | `[]`                                                      | Array of regex patterns for URLs to skip checking          |
+| `cacheExpiryFoundSeconds`       | `number`   | `2592000`                                                 | Cache duration for successful checks (default: 30 days)    |
+| `cacheExpiryNotFoundSeconds`    | `number`   | `259200`                                                  | Cache duration for failed checks (default: 3 days)         |
+| `timeoutSeconds`                | `number`   | `5`                                                       | Request timeout in seconds                                 |
+| `cacheDatabasePath`             | `string`   | `"cache/external-links.db"`                               | Path to the cache database file                            |
+| `userAgent`                     | `string`   | `"Mozilla/5.0 (compatible; html-validate-nice-checkers)"` | User agent string for HTTP requests                        |
+| `manuallyReviewedPath`          | `string`   | `""`                                                      | Path to CSV file with manually reviewed URLs (see below)   |
+| `manuallyReviewedExpirySeconds` | `number`   | `31536000`                                                | Expiry time for manually reviewed URLs (default: 365 days) |
+
+#### Manually reviewed URLs
+
+Some websites resist automated checking (anti-scraping, rate limiting, etc.). You can maintain a CSV file of manually reviewed URLs that should be treated as valid:
+
+**CSV format:**
+
+```csv
+url,last_approved_timestamp
+https://anti-scraping-site.example.com/page,1764877136
+https://example.com/manually-verified,1764877136
+```
+
+- The first line must be the header: `url,last_approved_timestamp`
+- `url`: The exact URL to approve (must match exactly, including protocol and path)
+- `last_approved_timestamp`: Unix timestamp (seconds since epoch) when you last verified the URL
+
+URLs in this file are approved if:
+
+1. The URL matches exactly
+2. Current time < (last_approved_timestamp + manuallyReviewedExpirySeconds)
+
+This allows time-limited manual approvals that automatically expire, ensuring you periodically re-verify that URLs still exist.
 
 ### `nice-checkers/https-links`
 

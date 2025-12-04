@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Test: Manually Reviewed URLs</title>
+    <link rel="canonical" href="https://example.com/page" />
+  </head>
+
+  <body>
+    <p>These links are in the manually reviewed CSV and should pass:</p>
+    <a href="https://example.com/manually-approved-link">Manually approved link</a>
+    <a href="https://anti-scraping-site.example.com/page">Anti-scraping site</a>
+
+    <p>This link has the same prefix but different suffix - should fail (exact match required):</p>
+    <a href="https://example.com/manually-approved-link/extra">Not exact match - should fail</a>
+
+    <p>This link is valid and should pass normal validation:</p>
+    <a href="https://httpbin.io/status/200">Normal valid link</a>
+  </body>
+</html>
