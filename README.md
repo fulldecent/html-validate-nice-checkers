@@ -119,6 +119,13 @@ This rule has no configurable options.
 
 Validates that all external links are live and accessible. This rule helps maintain website quality by catching broken external links before they go live, improving user experience and SEO.
 
+**Note:** This rule automatically skips validation of:
+
+- `<link rel="canonical">` - Canonical URLs point to the site itself and may not be published yet during development/preview
+- `<link rel="alternate">` - Alternate language URLs also point to the site itself and may not exist during development
+
+This allows you to validate your HTML before publishing, even when the canonical and alternate URLs reference the final production URLs.
+
 ```diff
 - <a href="https://wrong-subdomain.example.com">This link is broken</a>
 + <a href="https://example.com/nonexistent-page">This link works</a>

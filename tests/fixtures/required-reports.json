@@ -204,5 +204,6 @@
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     }
   ],
+  "tests/fixtures/ExternalLinkRule-skip-canonical-alternate.html": [],
   "tests/fixtures/no-errors.html": []
 }
