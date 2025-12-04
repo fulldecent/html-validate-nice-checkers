@@ -221,10 +221,10 @@
     {
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "External link is broken with status 404: https://example.com/manually-approved-link/extra",
-      "offset": 601,
+      "message": "External link is broken with status 404: https://httpbin.io/status/200/extra",
+      "offset": 622,
       "line": 15,
-      "column": 63,
+      "column": 50,
       "size": 1,
       "selector": "html > body > a:nth-child(5)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
