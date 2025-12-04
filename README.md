@@ -206,11 +206,15 @@ Reports insecure HTTP links that are accessible via HTTPS, encouraging the use o
 
 Validates that all internal links point to existing files in your project. This rule prevents broken internal navigation and missing resource references.
 
+**Case-sensitive checking:** This rule performs case-sensitive file matching even on case-insensitive file systems (like macOS default). A link to `/abc.webp` will fail if the actual file is `/AbC.webp`, ensuring your code works correctly on Linux servers where case matters.
+
 ```diff
 - <a href="/nonexistent-page">Broken internal link</a>
 - <img src="../images/missing.webp" alt="Missing image" />
+- <a href="/Logo.png">Wrong case (actual file: logo.png)</a>
 + <a href="/about">Working internal link</a>
 + <img src="../images/logo.webp" alt="Company logo" />
++ <a href="/logo.png">Correct case</a>
 ```
 
 ### Configuration

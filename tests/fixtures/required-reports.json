@@ -82,6 +82,19 @@
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     }
   ],
+  "tests/fixtures/InternalLinksRule-violation-case-sensitive.html": [
+    {
+      "ruleId": "nice-checkers/internal-links",
+      "severity": 2,
+      "message": "Internal link to \"No-Errors.html\" is broken.",
+      "offset": 420,
+      "line": 14,
+      "column": 29,
+      "size": 1,
+      "selector": "html > body > a:nth-child(4)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+    }
+  ],
   "tests/fixtures/InternalLinksRule-violation.html": [
     {
       "ruleId": "nice-checkers/internal-links",
