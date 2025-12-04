@@ -169,7 +169,7 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
     }
 
     try {
-      if (!fs.existsSync(this.options.manuallyReviewedPath)) {
+      if (!this.options.manuallyReviewedPath || !fs.existsSync(this.options.manuallyReviewedPath)) {
         return urlMap
       }
 
@@ -178,15 +178,21 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
 
       for (let i = 1; i < lines.length; i++) {
         // Skip header and empty lines
-        const line = lines[i].trim()
+        const line = lines[i]
         if (!line) continue
+        const trimmedLine = line.trim()
+        if (!trimmedLine) continue
 
         // Simple CSV parsing: split by comma and handle quoted fields
-        const parts = line.split(',')
+        const parts = trimmedLine.split(',')
         if (parts.length < 2) continue
 
-        const url = parts[0].replace(/^"|"$/g, '').trim()
-        const timestampStr = parts[1].replace(/^"|"$/g, '').trim()
+        const urlPart = parts[0]
+        const timestampPart = parts[1]
+        if (!urlPart || !timestampPart) continue
+
+        const url = urlPart.replace(/^"|"$/g, '').trim()
+        const timestampStr = timestampPart.replace(/^"|"$/g, '').trim()
 
         if (!url || !timestampStr) continue
 
