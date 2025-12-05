@@ -3,17 +3,18 @@
   <head>
     <meta charset="utf-8" />
     <title>My first website about horses</title>
-    <link rel="canonical" href="https://httpbin.io/status/200" />
+    <link rel="canonical" href="http://localhost:9876/status/200" />
   </head>
 
   <body>
-    <a href="https://httpbin.io/status/400">400 error</a>
-    <a href="https://httpbin.io/status/500">500 error</a>
-    <a href="https://httpbin.io/redirect-to?url=https%3A%2F%2Fexample.com&status_code=301"
+    <a href="http://localhost:9876/status/400">400 error</a>
+    <a href="http://localhost:9876/status/500">500 error</a>
+    <a
+      href="http://localhost:9876/redirect-to?url=http%3A%2F%2Flocalhost%3A9876%2Fstatus%2F200&status_code=301"
       >301 redirect</a
     >
-    <a href="https://----.httpbin.io">This server does not exist</a>
+    <a href="https://----.invalid.test">This server does not exist</a>
     <a href="https://-..-..-.-.-">This URL is bad</a>
-    <a href="https://this-should-skip.example.com">This URL is bad</a>
+    <a href="https://this-should-skip.invalid">This URL is bad</a>
   </body>
 </html>

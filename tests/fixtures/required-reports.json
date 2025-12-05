@@ -1,4 +1,17 @@
 {
+  "tests/fixtures/AlternateLanguageUrlRule-violation.html": [
+    {
+      "ruleId": "nice-checkers/alternate-language-url",
+      "severity": 2,
+      "message": "Alternate language link must use a fully qualified URL (with protocol://), found: /no-errors.html",
+      "offset": 263,
+      "line": 8,
+      "column": 6,
+      "size": 4,
+      "selector": "html > head > link:nth-child(4)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+    }
+  ],
   "tests/fixtures/CanonicalLinkRule-violation.html": [
     {
       "ruleId": "nice-checkers/canonical-link",
@@ -12,14 +25,29 @@
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     }
   ],
+  "tests/fixtures/ExternalLinkRule-manually-reviewed.html": [
+    {
+      "ruleId": "nice-checkers/external-links",
+      "severity": 2,
+      "message": "External link is broken with status 404: http://localhost:9876/status/200/extra",
+      "offset": 657,
+      "line": 19,
+      "column": 7,
+      "size": 1,
+      "selector": "html > body > a:nth-child(5)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+    }
+  ],
+  "tests/fixtures/ExternalLinkRule-skip-canonical-alternate.html": [],
+  "tests/fixtures/ExternalLinkRule-skip-regexes.html": [],
   "tests/fixtures/ExternalLinkRule-violations.html": [
     {
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "External link is broken with status 400: https://httpbin.io/status/400",
-      "offset": 249,
+      "message": "External link is broken with status 400: http://localhost:9876/status/400",
+      "offset": 255,
       "line": 10,
-      "column": 44,
+      "column": 47,
       "size": 1,
       "selector": "html > body > a:nth-child(1)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
@@ -27,10 +55,10 @@
     {
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "External link is broken with status 500: https://httpbin.io/status/500",
-      "offset": 307,
+      "message": "External link is broken with status 500: http://localhost:9876/status/500",
+      "offset": 316,
       "line": 11,
-      "column": 44,
+      "column": 47,
       "size": 1,
       "selector": "html > body > a:nth-child(2)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
@@ -38,9 +66,9 @@
     {
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "External link https://httpbin.io/redirect-to?url=https%3A%2F%2Fexample.com&status_code=301 redirects to: https://example.com",
-      "offset": 419,
-      "line": 13,
+      "message": "External link http://localhost:9876/redirect-to?url=http%3A%2F%2Flocalhost%3A9876%2Fstatus%2F200&status_code=301 redirects to: http://localhost:9876/status/200",
+      "offset": 456,
+      "line": 14,
       "column": 7,
       "size": 1,
       "selector": "html > body > a:nth-child(3)",
@@ -49,10 +77,10 @@
     {
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "External link is broken with status 500: https://----.httpbin.io",
-      "offset": 479,
-      "line": 15,
-      "column": 38,
+      "message": "External link is broken with status 500: https://----.invalid.test",
+      "offset": 518,
+      "line": 16,
+      "column": 40,
       "size": 1,
       "selector": "html > body > a:nth-child(4)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
@@ -61,33 +89,21 @@
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
       "message": "External link is broken with status 500: https://-..-..-.-.-",
-      "offset": 544,
-      "line": 16,
+      "offset": 583,
+      "line": 17,
       "column": 34,
       "size": 1,
       "selector": "html > body > a:nth-child(5)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     }
   ],
-  "tests/fixtures/HttpsLinksRule-violation.html": [
-    {
-      "ruleId": "nice-checkers/https-links",
-      "severity": 2,
-      "message": "Insecure link can be upgraded to HTTPS: http://httpbin.io/status/200",
-      "offset": 248,
-      "line": 10,
-      "column": 43,
-      "size": 1,
-      "selector": "html > body > a",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
-    }
-  ],
+  "tests/fixtures/HttpsLinksRule-violation.html": [],
   "tests/fixtures/InternalLinksRule-violation-case-sensitive.html": [
     {
       "ruleId": "nice-checkers/internal-links",
       "severity": 2,
       "message": "Internal link to \"No-Errors.html\" is broken.",
-      "offset": 420,
+      "offset": 428,
       "line": 14,
       "column": 29,
       "size": 1,
@@ -100,7 +116,7 @@
       "ruleId": "nice-checkers/internal-links",
       "severity": 2,
       "message": "Internal link to \"/nonexistent-page\" is broken.",
-      "offset": 237,
+      "offset": 240,
       "line": 10,
       "column": 32,
       "size": 1,
@@ -126,7 +142,7 @@
       "ruleId": "nice-checkers/mailto-awesome",
       "severity": 2,
       "message": "mailto: link is missing required parameters: subject, body",
-      "offset": 270,
+      "offset": 273,
       "line": 10,
       "column": 65,
       "size": 1,
@@ -137,7 +153,7 @@
       "ruleId": "nice-checkers/mailto-awesome",
       "severity": 2,
       "message": "mailto: link is missing required parameters: body",
-      "offset": 359,
+      "offset": 362,
       "line": 11,
       "column": 77,
       "size": 1,
@@ -174,7 +190,7 @@
       "ruleId": "nice-checkers/schema-org-json-ld",
       "severity": 2,
       "message": "Schema.org type \"MyTotallyFakeClass\" is not a valid class.",
-      "offset": 616,
+      "offset": 620,
       "line": 26,
       "column": 6,
       "size": 6,
@@ -185,7 +201,7 @@
       "ruleId": "nice-checkers/schema-org-json-ld",
       "severity": 2,
       "message": "Schema.org property \"myBogusProperty\" is not a valid property.",
-      "offset": 947,
+      "offset": 951,
       "line": 38,
       "column": 6,
       "size": 6,
@@ -196,7 +212,7 @@
       "ruleId": "nice-checkers/schema-org-json-ld",
       "severity": 2,
       "message": "Top-level JSON-LD object is missing required \"@type\" property.",
-      "offset": 1346,
+      "offset": 1354,
       "line": 52,
       "column": 6,
       "size": 6,
@@ -204,33 +220,5 @@
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#schema-org-json-ld"
     }
   ],
-  "tests/fixtures/AlternateLanguageUrlRule-violation.html": [
-    {
-      "ruleId": "nice-checkers/alternate-language-url",
-      "severity": 2,
-      "message": "Alternate language link must use a fully qualified URL (with protocol://), found: /no-errors.html",
-      "offset": 260,
-      "line": 8,
-      "column": 6,
-      "size": 4,
-      "selector": "html > head > link:nth-child(4)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
-    }
-  ],
-  "tests/fixtures/ExternalLinkRule-manually-reviewed.html": [
-    {
-      "ruleId": "nice-checkers/external-links",
-      "severity": 2,
-      "message": "External link is broken with status 404: https://httpbin.io/status/200/extra",
-      "offset": 622,
-      "line": 15,
-      "column": 50,
-      "size": 1,
-      "selector": "html > body > a:nth-child(5)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
-    }
-  ],
-  "tests/fixtures/ExternalLinkRule-skip-canonical-alternate.html": [],
-  "tests/fixtures/ExternalLinkRule-skip-regexes.html": [],
   "tests/fixtures/no-errors.html": []
 }

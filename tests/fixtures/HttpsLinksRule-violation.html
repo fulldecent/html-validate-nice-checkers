@@ -3,10 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <title>My first website about horses</title>
-    <link rel="canonical" href="https://httpbin.io/status/200" />
+    <link rel="canonical" href="http://localhost:9876/status/200" />
   </head>
 
   <body>
-    <a href="http://httpbin.io/status/200">Get more information about horses here!</a>
+    <!-- This link uses http:// but cannot be upgraded to https:// because the mock server
+         doesn't support HTTPS. So no violation is expected for this link. -->
+    <a href="http://localhost:9876/status/200">This HTTP link is not upgradeable</a>
+
+    <!-- TODO: Add a test case for an HTTP link that CAN be upgraded to HTTPS.
+         This would require either:
+         1. Setting up an HTTPS mock server with a self-signed certificate, or
+         2. Using a real external URL that supports both HTTP and HTTPS
+         When added, we should expect a violation like:
+         "Insecure link can be upgraded to HTTPS: http://example-upgradeable-site/page" -->
   </body>
 </html>

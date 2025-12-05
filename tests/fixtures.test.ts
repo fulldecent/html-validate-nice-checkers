@@ -1,24 +1,68 @@
-import { describe, it, expect, beforeAll } from 'vitest'
+import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { HtmlValidate, StaticConfigLoader } from 'html-validate'
 import { readFileSync, readdirSync, writeFileSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join, extname } from 'path'
+import { spawn, type ChildProcess } from 'child_process'
 import NiceCheckersPlugin from '../src/index'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const fixturesDir = join(__dirname, 'fixtures')
 
+let mockServerProcess: ChildProcess | null = null
+
 type ReportsByFile = {
   [filePath: string]: object[]
+}
+
+// Start the mock server in a child process to avoid event loop deadlock
+function startMockServer(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const serverScript = join(__dirname, 'mock-server.ts')
+    // Use yarn tsx to run the TypeScript file in Yarn PnP environment
+    mockServerProcess = spawn('yarn', ['tsx', serverScript], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      cwd: join(__dirname, '..'),
+    })
+
+    mockServerProcess.stdout?.on('data', (data: Buffer) => {
+      const output = data.toString()
+      if (output.includes('READY:')) {
+        console.log('\n[mock-server] Started on http://localhost:9876')
+        resolve()
+      }
+    })
+
+    mockServerProcess.stderr?.on('data', (data: Buffer) => {
+      // Ignore the expected warnings about missing static file directories
+      const msg = data.toString()
+      if (!msg.includes('"root" path')) {
+        console.error('[mock-server error]', msg)
+      }
+    })
+
+    mockServerProcess.on('error', reject)
+
+    // Timeout if server doesn't start in 10 seconds
+    setTimeout(() => reject(new Error('Mock server startup timeout')), 10000)
+  })
+}
+
+function stopMockServer(): void {
+  if (mockServerProcess) {
+    mockServerProcess.kill('SIGTERM')
+    mockServerProcess = null
+    console.log('[mock-server] Stopped\n')
+  }
 }
 
 // Generate a fresh CSV with current timestamp to avoid expiration issues
 function generateManuallyReviewedCSV(): void {
   const currentTimestamp = Math.floor(Date.now() / 1000)
   const csvContent = `url,last_approved_timestamp
-https://example.com/manually-approved-link,${currentTimestamp}
-https://anti-scraping-site.example.com/page,${currentTimestamp}
+http://localhost:9876/status/200,${currentTimestamp}
+https://anti-scraping-site.invalid/page,${currentTimestamp}
 `
   writeFileSync(join(fixturesDir, 'external-links-manually-reviewed.csv'), csvContent, 'utf-8')
 }
@@ -56,6 +100,14 @@ describe('fixture validation against required output', () => {
   const requiredOutputs = getRequiredReports()
   const fixtureFiles = getFixtureFiles()
 
+  beforeAll(async () => {
+    await startMockServer()
+  })
+
+  afterAll(() => {
+    stopMockServer()
+  })
+
   it('should have required-output.json available', () => {
     if (!requiredOutputs) {
       console.warn('no required-output.json found - skipping fixture validation tests')
@@ -92,10 +144,10 @@ describe('fixture validation against required output', () => {
               cacheExpiryFoundSeconds: 0,
               cacheExpiryNotFoundSeconds: 0,
               skipRegexes: [
-                '^https://this-should-skip.example.com',
-                'dont-check-this\\.example\\.com',
-                'https://x\\.com/',
-                'https://www\\.linkedin\\.com/',
+                '^https://this-should-skip.invalid',
+                'dont-check-this\.invalid',
+                'https://x\.com/',
+                'https://www\.linkedin\.com/',
               ],
               manuallyReviewedPath: join(fixturesDir, 'external-links-manually-reviewed.csv'),
               manuallyReviewedExpirySeconds: 365 * 24 * 60 * 60, // 1 year

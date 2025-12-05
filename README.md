@@ -405,6 +405,10 @@ and YES, use workspace TypeScript version.
 - `yarn lint` runs TypeScript type checking
 - `yarn format` formats all source files with Prettier
 
+### Testing notes
+
+When running `yarn test` to test Nice Checkers itself, you may see two warnings about missing "root" paths. These come from the mock HTTP server (`@jaredwray/mockhttp`) which is only used in our test suite. The warnings are harmless and do not affect test results. We consider this an error in the upstream mock HTTP server package. These warnings do not appear for downstream users who install Nice Checkers to validate their own websites.
+
 ## Publishing to [npm registry](https://www.npmjs.com/package/@fulldecent/nice-checkers-plugin)
 
 @fulldecent will periodically create a GitHub release and this triggers [the npm publish workflow](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/.github/workflows/publish.yml).

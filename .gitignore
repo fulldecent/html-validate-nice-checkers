@@ -6,6 +6,9 @@
 /coverage
 /package.tgz
 
+## Rewritten each run
+/tests/fixtures/external-links-manually-reviewed.csv
+
 ## Geniric Yarn ignore
 .pnp.*
 .yarn/*

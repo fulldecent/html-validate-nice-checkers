@@ -3,19 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <title>Test: Manually Reviewed URLs</title>
-    <link rel="canonical" href="https://example.com/page" />
+    <link rel="canonical" href="http://localhost:9876/status/200" />
   </head>
 
   <body>
     <p>These links are in the manually reviewed CSV and should pass (no network call):</p>
-    <a href="https://httpbin.io/status/200">Manually approved - exact match</a>
-    <a href="https://anti-scraping-site.example.com/page">Anti-scraping site</a>
+    <a href="http://localhost:9876/status/200">Manually approved - exact match</a>
+    <a href="https://anti-scraping-site.invalid/page">Anti-scraping site</a>
 
     <p>
       This link has the same prefix but different suffix - should fail (exact match required, makes
       network call):
     </p>
-    <a href="https://httpbin.io/status/200/extra"
+    <a href="http://localhost:9876/status/200/extra"
       >Not exact match - should make network call and fail</a
     >
   </body>
