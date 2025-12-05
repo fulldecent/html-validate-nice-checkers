@@ -7,9 +7,8 @@ import {
 } from 'html-validate'
 import Database from 'better-sqlite3'
 import fs from 'node:fs'
-import { execSync } from 'node:child_process'
-import { quote as shellEscape } from 'shell-quote'
 import path from 'node:path'
+import { syncFetch } from '../utils/syncFetch'
 
 interface PackageCacheRow {
   url: string
@@ -107,12 +106,22 @@ export default class LatestPackagesRule extends Rule<void, RuleOptions> {
     const packageName = match[1]
     const packageVersion = match[2]
     const apiUrl = `https://data.jsdelivr.com/v1/package/npm/${packageName}`
-    const escapedUrl = shellEscape([apiUrl])
-    const command = `curl --silent --fail --no-location --max-time ${this.options.timeoutSeconds} ${escapedUrl}`
+
+    const fetchResult = syncFetch(apiUrl, {
+      timeoutSeconds: this.options.timeoutSeconds,
+      maxRedirs: 0,
+    })
+
+    if (!fetchResult.success || !fetchResult.body) {
+      // Log errors related to the check itself (e.g., network issues) but don't fail validation.
+      console.error(
+        `[html-validate-latest-packages] Error checking package version for ${url}: ${fetchResult.error ?? 'Unknown error'}`
+      )
+      return
+    }
 
     try {
-      const result = execSync(command).toString()
-      const data = JSON.parse(result)
+      const data = JSON.parse(fetchResult.body)
 
       if (data && data.tags && Object.values(data.tags).includes(packageVersion)) {
         // The version in the URL is a valid tag (e.g., 'latest', 'beta', or a specific version tag).
@@ -129,10 +138,11 @@ export default class LatestPackagesRule extends Rule<void, RuleOptions> {
           message: `Package "${packageName}" is not using a current version tag. Found "${packageVersion}", but latest is "${data.tags.latest}".`,
         })
       }
-    } catch (e: any) {
-      // Log errors related to the check itself (e.g., network issues) but don't fail validation.
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e)
+      // Log errors related to the check itself (e.g., JSON parse issues) but don't fail validation.
       console.error(
-        `[html-validate-latest-packages] Error checking package version for ${url}: ${e.message}`
+        `[html-validate-latest-packages] Error parsing package info for ${url}: ${errorMessage}`
       )
     }
   }

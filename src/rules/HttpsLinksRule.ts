@@ -7,9 +7,8 @@ import {
 } from 'html-validate'
 import Database from 'better-sqlite3'
 import fs from 'node:fs'
-import { execSync } from 'node:child_process'
-import { quote as shellEscape } from 'shell-quote'
 import path from 'node:path'
+import { syncHead } from '../utils/syncFetch'
 
 interface HttpsCacheRow {
   url: string
@@ -97,23 +96,21 @@ export default class HttpsLinksRule extends Rule<void, RuleOptions> {
 
   private performHttpsCheck(url: string, element: HtmlElement): void {
     const httpsUrl = url.replace(/^http:/, 'https:')
-    const escapedUrl = shellEscape([httpsUrl])
 
-    // Use --fail to make curl exit with an error on 4xx/5xx responses.
-    const command = `curl --head --silent --fail --no-location --max-time ${this.options.timeoutSeconds} ${escapedUrl} > /dev/null 2>&1`
+    const result = syncHead(httpsUrl, {
+      timeoutSeconds: this.options.timeoutSeconds,
+      maxRedirs: 0,
+    })
 
-    try {
-      execSync(command)
-      // If execSync does NOT throw, the command was successful (exit code 0).
-      // This means the URL is available over HTTPS.
+    if (result.success) {
+      // The URL is available over HTTPS.
       this.db.prepare('REPLACE INTO urls (url, found, time) VALUES (?, 1, unixepoch())').run(url)
       this.report({
         node: element,
         message: `Insecure link can be upgraded to HTTPS: ${url}`,
       })
-    } catch (error) {
-      // If execSync throws, the command failed.
-      // This means the URL is NOT available over HTTPS. Cache this result to avoid re-checking.
+    } else {
+      // The URL is NOT available over HTTPS. Cache this result to avoid re-checking.
       this.db.prepare('REPLACE INTO urls (url, found, time) VALUES (?, 0, unixepoch())').run(url)
     }
   }

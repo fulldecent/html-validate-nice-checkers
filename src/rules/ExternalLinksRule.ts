@@ -7,9 +7,8 @@ import {
 } from 'html-validate'
 import Database from 'better-sqlite3'
 import fs from 'node:fs'
-import { execSync } from 'node:child_process'
-import { quote as shellEscape } from 'shell-quote'
 import path from 'node:path'
+import { syncHead } from '../utils/syncFetch'
 
 interface UrlCacheRow {
   url: string
@@ -226,18 +225,20 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
 
   private performCheck(originalUrl: string, element: HtmlElement, requestUrl?: string): void {
     const normalizedUrl = normalizeUrl(originalUrl)
-    const escapedUrl = shellEscape([requestUrl ?? originalUrl])
+    const urlToCheck = requestUrl ?? originalUrl
 
-    const command = `curl --head --silent --max-time ${this.options.timeoutSeconds} --max-redirs 0 \
-      --user-agent "${this.options.userAgent}" \
-      --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9" \
-      --dump-header - --output /dev/null ${escapedUrl} || true`
-    const output = execSync(command).toString()
-    const statusCodeMatch = output.match(/^HTTP\/[0-9.]+ (\d{3})/m)
-    const statusCode =
-      statusCodeMatch && statusCodeMatch[1] ? parseInt(statusCodeMatch[1], 10) : 500
-    const locationMatch = output.match(/^Location: (.+)/im)
-    const redirectTo = locationMatch && locationMatch[1] ? locationMatch[1].trim() : null
+    const result = syncHead(urlToCheck, {
+      timeoutSeconds: this.options.timeoutSeconds,
+      userAgent: this.options.userAgent,
+      maxRedirs: 0,
+      headers: {
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+      },
+    })
+
+    const statusCode = result.statusCode ?? 500
+    const redirectTo = result.redirectTo ?? null
 
     this.db
       .prepare('REPLACE INTO urls (url, status, redirect_to, time) VALUES (?, ?, ?, unixepoch())')
