@@ -19,7 +19,7 @@ type ReportsByFile = {
 // Start the mock server in a child process to avoid event loop deadlock
 function startMockServer(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const serverScript = join(__dirname, 'mock-server.ts')
+    const serverScript = join(__dirname, 'mock/http-server.ts')
     // Use yarn tsx to run the TypeScript file in Yarn PnP environment
     mockServerProcess = spawn('yarn', ['tsx', serverScript], {
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -144,7 +144,7 @@ describe('fixture validation against required output', () => {
               cacheExpiryFoundSeconds: 0,
               cacheExpiryNotFoundSeconds: 0,
               skipRegexes: [
-                '^https://this-should-skip.invalid',
+                'site\.invalid/url-is-skipped-by-regex-and-never-checked',
                 'dont-check-this\.invalid',
                 'https://x\.com/',
                 'https://www\.linkedin\.com/',

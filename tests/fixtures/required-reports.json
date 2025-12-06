@@ -1,4 +1,112 @@
 {
+  "tests/fixtures/AlternateLanguageLinksRule-no-self.html": [
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "No self-link found in alternate language links (must match canonical URL)",
+      "offset": 35,
+      "line": 4,
+      "column": 2,
+      "size": 4,
+      "selector": "html > head",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    },
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "Alternate page http://localhost:9876/status/404 is not accessible",
+      "offset": 208,
+      "line": 8,
+      "column": 4,
+      "size": 4,
+      "selector": "html > head > link:nth-child(4)",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    }
+  ],
+  "tests/fixtures/AlternateLanguageLinksRule-not-qualified.html": [
+    {
+      "ruleId": "nice-checkers/alternate-language-url",
+      "severity": 2,
+      "message": "Alternate language link must use a fully qualified URL (with protocol://), found: /en/alt-relative-to-en",
+      "offset": 311,
+      "line": 9,
+      "column": 4,
+      "size": 4,
+      "selector": "html > head > link:nth-child(5)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+    },
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "Alternate link href must be fully qualified: /en/alt-relative-to-en",
+      "offset": 311,
+      "line": 9,
+      "column": 4,
+      "size": 4,
+      "selector": "html > head > link:nth-child(5)",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    },
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "Alternate page /en/alt-relative-to-en is not accessible",
+      "offset": 311,
+      "line": 9,
+      "column": 4,
+      "size": 4,
+      "selector": "html > head > link:nth-child(5)",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    },
+    {
+      "ruleId": "nice-checkers/internal-links",
+      "severity": 2,
+      "message": "Internal link to \"/en/alt-relative-to-en\" is broken.",
+      "offset": 376,
+      "line": 9,
+      "column": 69,
+      "size": 2,
+      "selector": "html > head > link:nth-child(5)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+    }
+  ],
+  "tests/fixtures/AlternateLanguageLinksRule-reciprocal.html": [],
+  "tests/fixtures/AlternateLanguageLinksRule-self-mismatch.html": [
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "Self alternate link hreflang (es) does not match page lang (en)",
+      "offset": 217,
+      "line": 8,
+      "column": 4,
+      "size": 4,
+      "selector": "html > head > link:nth-child(4)",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    }
+  ],
+  "tests/fixtures/AlternateLanguageLinksRule-violation.html": [
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "Self alternate link hreflang (es) does not match page lang (en)",
+      "offset": 204,
+      "line": 8,
+      "column": 4,
+      "size": 4,
+      "selector": "html > head > link:nth-child(4)",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    },
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "Reciprocal alternate link not found on http://localhost:9876/en/alt-to-en (must link back to http://localhost:9876/es/alt-to-es-en with hreflang=\"en\")",
+      "offset": 290,
+      "line": 9,
+      "column": 4,
+      "size": 4,
+      "selector": "html > head > link:nth-child(5)",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    }
+  ],
   "tests/fixtures/AlternateLanguageUrlRule-violation.html": [
     {
       "ruleId": "nice-checkers/alternate-language-url",
@@ -10,6 +118,39 @@
       "size": 4,
       "selector": "html > head > link:nth-child(4)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+    },
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "Alternate link href must be fully qualified: /no-errors.html",
+      "offset": 263,
+      "line": 8,
+      "column": 6,
+      "size": 4,
+      "selector": "html > head > link:nth-child(4)",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    },
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "Alternate page /no-errors.html is not accessible",
+      "offset": 263,
+      "line": 8,
+      "column": 6,
+      "size": 4,
+      "selector": "html > head > link:nth-child(4)",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    },
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "Self alternate link hreflang (fr) does not match page lang (en)",
+      "offset": 371,
+      "line": 10,
+      "column": 6,
+      "size": 4,
+      "selector": "html > head > link:nth-child(5)",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
     }
   ],
   "tests/fixtures/CanonicalLinkRule-violation.html": [
@@ -29,25 +170,70 @@
     {
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "External link is broken with status 404: http://localhost:9876/status/200/extra",
-      "offset": 657,
-      "line": 19,
-      "column": 7,
+      "message": "External link is broken with status 500: http://site.invalid/url-is-accepted-as-existing-and-never-checked",
+      "offset": 542,
+      "line": 14,
+      "column": 78,
       "size": 1,
-      "selector": "html > body > a:nth-child(5)",
+      "selector": "html > body > a:nth-child(4)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+    },
+    {
+      "ruleId": "nice-checkers/external-links",
+      "severity": 2,
+      "message": "External link is broken with status 404: http://localhost:9876/status/200/page-that-is-404-that-happens-to-have-status-200-prefix",
+      "offset": 813,
+      "line": 20,
+      "column": 101,
+      "size": 1,
+      "selector": "html > body > a:nth-child(6)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
     }
   ],
-  "tests/fixtures/ExternalLinkRule-skip-canonical-alternate.html": [],
+  "tests/fixtures/ExternalLinkRule-skip-canonical-alternate.html": [
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "No self-link found in alternate language links (must match canonical URL)",
+      "offset": 36,
+      "line": 3,
+      "column": 4,
+      "size": 4,
+      "selector": "html > head",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    },
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "Alternate page http://localhost:9876/status/400 is not accessible",
+      "offset": 333,
+      "line": 8,
+      "column": 6,
+      "size": 4,
+      "selector": "html > head > link:nth-child(4)",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    },
+    {
+      "ruleId": "nice-checkers/alternate-language-links",
+      "severity": 2,
+      "message": "Alternate page http://localhost:9876/status/500 is not accessible",
+      "offset": 416,
+      "line": 9,
+      "column": 6,
+      "size": 4,
+      "selector": "html > head > link:nth-child(5)",
+      "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    }
+  ],
   "tests/fixtures/ExternalLinkRule-skip-regexes.html": [],
   "tests/fixtures/ExternalLinkRule-violations.html": [
     {
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
       "message": "External link is broken with status 400: http://localhost:9876/status/400",
-      "offset": 255,
-      "line": 10,
-      "column": 47,
+      "offset": 242,
+      "line": 11,
+      "column": 45,
       "size": 1,
       "selector": "html > body > a:nth-child(1)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
@@ -56,9 +242,9 @@
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
       "message": "External link is broken with status 500: http://localhost:9876/status/500",
-      "offset": 316,
-      "line": 11,
-      "column": 47,
+      "offset": 301,
+      "line": 12,
+      "column": 45,
       "size": 1,
       "selector": "html > body > a:nth-child(2)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
@@ -67,9 +253,9 @@
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
       "message": "External link http://localhost:9876/redirect-to?url=http%3A%2F%2Flocalhost%3A9876%2Fstatus%2F200&status_code=301 redirects to: http://localhost:9876/status/200",
-      "offset": 456,
-      "line": 14,
-      "column": 7,
+      "offset": 426,
+      "line": 13,
+      "column": 111,
       "size": 1,
       "selector": "html > body > a:nth-child(3)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
@@ -78,9 +264,9 @@
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
       "message": "External link is broken with status 500: https://----.invalid.test",
-      "offset": 518,
-      "line": 16,
-      "column": 40,
+      "offset": 485,
+      "line": 15,
+      "column": 38,
       "size": 1,
       "selector": "html > body > a:nth-child(4)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
@@ -89,9 +275,9 @@
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
       "message": "External link is broken with status 500: https://-..-..-.-.-",
-      "offset": 583,
-      "line": 17,
-      "column": 34,
+      "offset": 548,
+      "line": 16,
+      "column": 32,
       "size": 1,
       "selector": "html > body > a:nth-child(5)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
@@ -176,22 +362,11 @@
   ],
   "tests/fixtures/SchemaOrgJsonLdRule-violation.html": [
     {
-      "ruleId": "nice-checkers/canonical-link",
-      "severity": 2,
-      "message": "<head> is missing <link rel=\"canonical\" ...>",
-      "offset": 36,
-      "line": 3,
-      "column": 4,
-      "size": 4,
-      "selector": "html > head",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
-    },
-    {
       "ruleId": "nice-checkers/schema-org-json-ld",
       "severity": 2,
       "message": "Schema.org type \"MyTotallyFakeClass\" is not a valid class.",
-      "offset": 620,
-      "line": 26,
+      "offset": 681,
+      "line": 27,
       "column": 6,
       "size": 6,
       "selector": "html > body > script:nth-child(4)",
@@ -201,8 +376,8 @@
       "ruleId": "nice-checkers/schema-org-json-ld",
       "severity": 2,
       "message": "Schema.org property \"myBogusProperty\" is not a valid property.",
-      "offset": 951,
-      "line": 38,
+      "offset": 1012,
+      "line": 39,
       "column": 6,
       "size": 6,
       "selector": "html > body > script:nth-child(6)",
@@ -212,8 +387,8 @@
       "ruleId": "nice-checkers/schema-org-json-ld",
       "severity": 2,
       "message": "Top-level JSON-LD object is missing required \"@type\" property.",
-      "offset": 1354,
-      "line": 52,
+      "offset": 1415,
+      "line": 53,
       "column": 6,
       "size": 6,
       "selector": "html > body > script:nth-child(8)",

@@ -62,7 +62,7 @@ export default class HttpsLinksRule extends Rule<void, RuleOptions> {
   public override documentation(): RuleDocumentation {
     return {
       description: 'Report insecure HTTP links that are accessible via HTTPS.',
-      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules',
+      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules',
     }
   }
 

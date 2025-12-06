@@ -51,7 +51,7 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
   public override documentation(): RuleDocumentation {
     return {
       description: 'Validate that all internal links point to existing files.',
-      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules',
+      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules',
     }
   }
 

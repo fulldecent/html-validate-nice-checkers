@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup'
 /**
  * tsup Configuration for Dual Package Publishing (ESM/CJS)
  *
- * Design Decision: While tsup advertises as "zero-config", we need this configuration
+ * Design decision: While tsup advertises as "zero-config", we need this configuration
  * to ensure proper dual ESM/CJS publishing with:
  * 1. Correct file extensions (.js/.cjs) for module resolution
  * 2. Proper TypeScript declaration files (.d.ts/.d.cts)

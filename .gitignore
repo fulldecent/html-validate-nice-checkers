@@ -9,7 +9,7 @@
 ## Rewritten each run
 /tests/fixtures/external-links-manually-reviewed.csv
 
-## Geniric Yarn ignore
+## Generic Yarn ignore
 .pnp.*
 .yarn/*
 !.yarn/patches

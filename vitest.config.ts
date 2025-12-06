@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config'
 /**
  * Vitest configuration
  *
- * Design decision: Configured for TypeScript testing with coverage reporting.
+ * Design decision: configured for TypeScript testing with coverage reporting.
  * Uses Node.js test environment since we're building a Node.js library.
  * Coverage excludes build artifacts and config files.
  */

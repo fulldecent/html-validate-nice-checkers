@@ -2,11 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Test: Canonical and Alternate Links Should Be Skipped</title>
+    <title>Test: canonical and alternate links should be skipped</title>
     <!-- These should NOT trigger external link validation errors, even though they point to non-existent URLs -->
-    <link rel="canonical" href="http://localhost:9876/this-does-not-exist-yet" />
-    <link rel="alternate" hreflang="es" href="http://localhost:9876/es/not-published-yet" />
-    <link rel="alternate" hreflang="fr" href="http://localhost:9876/fr/also-not-published" />
+    <link rel="canonical" href="http://localhost:9876/status/200" />
+    <link rel="alternate" hreflang="es" href="http://localhost:9876/status/400" />
+    <link rel="alternate" hreflang="fr" href="http://localhost:9876/status/500" />
   </head>
 
   <body>

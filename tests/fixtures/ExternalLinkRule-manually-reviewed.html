@@ -2,20 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Test: Manually Reviewed URLs</title>
+    <title>Test: manually reviewed URLs</title>
     <link rel="canonical" href="http://localhost:9876/status/200" />
   </head>
 
   <body>
-    <p>These links are in the manually reviewed CSV and should pass (no network call):</p>
+    <p>First link is in the manually reviewed CSV and should pass (no network call):</p>
     <a href="http://localhost:9876/status/200">Manually approved - exact match</a>
-    <a href="https://anti-scraping-site.invalid/page">Anti-scraping site</a>
+    <p>
+      Second link is NOT in the manually reviewed CSV and should fail (tests non-matching URLs):
+    </p>
+    <a href="http://site.invalid/url-is-accepted-as-existing-and-never-checked"
+      >Manually reviewed URL - NOT in CSV</a
+    >
 
     <p>
       This link has the same prefix but different suffix - should fail (exact match required, makes
       network call):
     </p>
-    <a href="http://localhost:9876/status/200/extra"
+    <a
+      href="http://localhost:9876/status/200/page-that-is-404-that-happens-to-have-status-200-prefix"
       >Not exact match - should make network call and fail</a
     >
   </body>
