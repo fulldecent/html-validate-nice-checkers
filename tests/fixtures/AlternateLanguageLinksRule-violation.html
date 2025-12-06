@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Test: alternate language links - violations</title>
+    <link rel="canonical" href="http://localhost:9876/es/alt-to-es-en" />
+    <link rel="alternate" hreflang="es" href="http://localhost:9876/es/alt-to-es-en" />
+    <link rel="alternate" hreflang="en" href="http://localhost:9876/en/alt-to-en" />
+    <!-- The English page does NOT link back to this Spanish page, so this should fail -->
+  </head>
+
+  <body>
+    <p>Test for alternate language links rule - missing reciprocal link and 404.</p>
+  </body>
+</html>

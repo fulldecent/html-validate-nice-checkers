@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Test: alternate language links - missing self link</title>
+    <link rel="canonical" href="http://localhost:9876/en/alt-to-en" />
+    <link rel="alternate" hreflang="fr" href="http://localhost:9876/status/404" />
+    <!-- No self-link (no alternate with href matching canonical) -->
+    <!-- Using status/404 so it's not accessible, triggering the fetch error -->
+  </head>
+
+  <body>
+    <p>Test for alternate language links rule - missing self link.</p>
+  </body>
+</html>

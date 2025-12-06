@@ -362,6 +362,42 @@ If you are still using jQuery after 2022, please try to open your favorite chatb
 
 This rule has no configurable options.
 
+### `nice-checkers/alternate-language-links`
+
+This rule enforces best practices for alternate language links (`<link rel="alternate" hreflang="...">`) in the `<head>` of HTML documents, as recommended by authoritative and established sources:
+
+- [Google Search Central: specify alternate language pages](https://developers.google.com/search/docs/specialty/international/localized-versions)
+- [W3C HTML Standard: link types](https://html.spec.whatwg.org/multipage/links.html#link-type-alternate)
+
+Note that these sources we reference have a conflict. One says that you may use relative URLs and the other says you must use fully qualified URLs. To be conservative, we require fully qualified URLs.
+
+**Activation:** this checker is only active if one or more `<link rel="alternate" hreflang="...">` elements exist in the document `<head>`.
+
+**Checks performed:**
+
+1. **Self-link requirement:**
+   - There must be at least one `<link rel="alternate" hreflang="...">` whose `href` exactly matches the canonical URL of the page.
+   - The `hreflang` of this self-link must match the page's `<html lang="...">` attribute, if set.
+   - The canonical URL must exist (enforced by another checker).
+
+2. **Fully qualified URLs:**
+   - Every alternate language link must use a fully qualified URL (must include a scheme, e.g., `https://`).
+
+3. **Reciprocal linking:**
+   - Every alternate language page linked out to must reciprocate by linking back to the current page's canonical URL via its own `<link rel="alternate" hreflang="...">`.
+   - The `hreflang` of the reciprocal link on the remote page must match the `<html lang="...">` of the current page (if set).
+   - This is enforced by fetching the remote page and verifying its `<head>` contains the correct reciprocal link.
+
+**Example:**
+
+- The English page must link to itself and to the French page.
+- The French page (`https://example.com/page-fr`) must link back to the English canonical page, and the `hreflang` must match the English page’s `<html lang="en">`.
+
+**References:**
+
+- [Google: specify alternate language pages](https://developers.google.com/search/docs/specialty/international/localized-versions)
+- [W3C: link type 'alternate'](https://html.spec.whatwg.org/multipage/links.html#link-type-alternate)
+
 ## Development
 
 This package is built with TypeScript and supports both ESM and CommonJS module systems. Thank you for contributing improvements to this project!

@@ -5,6 +5,7 @@
 
 import type { Plugin } from 'html-validate'
 import AlternateLanguageUrlRule from './rules/AlternateLanguageUrlRule'
+import AlternateLanguageLinksRule from './rules/AlternateLanguageLinksRule'
 import CanonicalLinkRule from './rules/CanonicalLinkRule'
 import ExternalLinksRule from './rules/ExternalLinksRule'
 import HttpsLinksRule from './rules/HttpsLinksRule'
@@ -19,6 +20,7 @@ const plugin: Plugin = {
 
   rules: {
     'nice-checkers/alternate-language-url': AlternateLanguageUrlRule,
+    'nice-checkers/alternate-language-links': AlternateLanguageLinksRule,
     'nice-checkers/canonical-link': CanonicalLinkRule,
     'nice-checkers/external-links': ExternalLinksRule,
     'nice-checkers/https-links': HttpsLinksRule,
@@ -33,6 +35,7 @@ const plugin: Plugin = {
     recommended: {
       rules: {
         'nice-checkers/alternate-language-url': ['error'],
+        'nice-checkers/alternate-language-links': ['error'],
         'nice-checkers/canonical-link': ['error'],
         'nice-checkers/external-links': ['error'],
         'nice-checkers/https-links': ['error'],

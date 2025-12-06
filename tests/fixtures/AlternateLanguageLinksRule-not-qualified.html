@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Test: alternate language links - not fully qualified</title>
+    <link rel="canonical" href="http://localhost:9876/en/alt-relative-to-en" />
+    <link rel="alternate" hreflang="en" href="http://localhost:9876/en/alt-relative-to-en" />
+    <link rel="alternate" hreflang="en" href="/en/alt-relative-to-en" />
+    <!-- The second link is relative, not fully qualified -->
+  </head>
+
+  <body>
+    <p>Test for alternate language links rule - URL not fully qualified.</p>
+  </body>
+</html>
