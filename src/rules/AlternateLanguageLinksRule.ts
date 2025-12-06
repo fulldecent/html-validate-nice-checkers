@@ -2,6 +2,7 @@ import {
   Rule,
   type RuleDocumentation,
   type TagReadyEvent,
+  type DOMReadyEvent,
   type HtmlElement,
   type SchemaObject,
 } from 'html-validate'
@@ -21,10 +22,10 @@ export default class AlternateLanguageLinksRule extends Rule<void, void> {
   }
 
   public override setup(): void {
-    this.on('dom:ready', (event: DomReadyEvent) => this.domReady(event))
+    this.on('dom:ready', (event: DOMReadyEvent) => this.domReady(event))
   }
 
-  private domReady(event: DomReadyEvent): void {
+  private domReady(event: DOMReadyEvent): void {
     const { document } = event
     const htmlElement = document.querySelector('html')
     if (!htmlElement) return
