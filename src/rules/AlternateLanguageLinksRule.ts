@@ -5,10 +5,9 @@ import {
   type DOMReadyEvent,
   type HtmlElement,
   type SchemaObject,
-  Parser,
-  Config,
 } from 'html-validate'
 import { syncFetch } from '../utils/syncFetch'
+import * as cheerio from 'cheerio'
 
 export default class AlternateLanguageLinksRule extends Rule<void, void> {
   public static override schema(): SchemaObject {
@@ -95,35 +94,26 @@ export default class AlternateLanguageLinksRule extends Rule<void, void> {
         continue
       }
 
-      // Check for reciprocal link in the fetched HTML using DOM parsing
+      // Check for reciprocal link in the fetched HTML
       // The remote page must have an alternate link back to this page's canonical URL
       // with hreflang matching this page's lang
       const expectedHreflang = pageLang ?? ''
 
-      // Parse the fetched HTML into a DOM tree using a minimal config
-      const config = Config.empty().resolve()
-      const parser = new Parser(config)
-      const remoteDoc = parser.parseHtml({
-        data: result.body,
-        filename: href,
-        line: 1,
-        column: 1,
-        offset: 0,
-      })
+      // Parse the remote HTML for alternate links using cheerio
+      const $ = cheerio.load(result.body)
+      const remoteAlternates = $('link[rel="alternate"][hreflang]')
 
-      // Look for reciprocal alternate link using DOM methods
-      const remoteAlternates = remoteDoc.querySelectorAll('link[rel="alternate"][hreflang]')
       let foundReciprocal = false
-
-      for (const remoteAlt of remoteAlternates) {
-        const remoteHref = remoteAlt.getAttribute('href')?.value
-        const remoteHreflang = remoteAlt.getAttribute('hreflang')?.value
+      remoteAlternates.each((_, element) => {
+        const remoteHref = $(element).attr('href')
+        const remoteHreflang = $(element).attr('hreflang')
 
         if (remoteHref === canonicalUrl && remoteHreflang === expectedHreflang) {
           foundReciprocal = true
-          break
+          return false // break out of each loop
         }
-      }
+        return
+      })
 
       if (!foundReciprocal) {
         this.report({
