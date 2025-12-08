@@ -5,6 +5,8 @@ import {
   type DOMReadyEvent,
   type HtmlElement,
   type SchemaObject,
+  Parser,
+  Config,
 } from 'html-validate'
 import { syncFetch } from '../utils/syncFetch'
 
@@ -84,7 +86,7 @@ export default class AlternateLanguageLinksRule extends Rule<void, void> {
       const href: string | undefined = typeof hrefAttr2 === 'string' ? hrefAttr2 : undefined
       if (!href || href === canonicalUrl) continue
 
-      const result = syncFetch(href, { timeoutSeconds: 10 })
+      const result = syncFetch(href, { timeoutSeconds: 10, maxRedirs: 5 })
       if (!result.success || !result.body) {
         this.report({
           node: alt,
@@ -93,30 +95,37 @@ export default class AlternateLanguageLinksRule extends Rule<void, void> {
         continue
       }
 
-      // Check for reciprocal link in the fetched HTML
+      // Check for reciprocal link in the fetched HTML using DOM parsing
       // The remote page must have an alternate link back to this page's canonical URL
       // with hreflang matching this page's lang
       const expectedHreflang = pageLang ?? ''
-      // Look for: <link rel="alternate" hreflang="..." href="canonicalUrl">
-      // We need to handle both attribute orders
-      const reciprocalPattern1 = new RegExp(
-        `<link[^>]*rel=["']alternate["'][^>]*hreflang=["']${expectedHreflang}["'][^>]*href=["']${escapeRegExp(canonicalUrl)}["'][^>]*>`,
-        'i'
-      )
-      const reciprocalPattern2 = new RegExp(
-        `<link[^>]*hreflang=["']${expectedHreflang}["'][^>]*rel=["']alternate["'][^>]*href=["']${escapeRegExp(canonicalUrl)}["'][^>]*>`,
-        'i'
-      )
-      const reciprocalPattern3 = new RegExp(
-        `<link[^>]*href=["']${escapeRegExp(canonicalUrl)}["'][^>]*rel=["']alternate["'][^>]*hreflang=["']${expectedHreflang}["'][^>]*>`,
-        'i'
-      )
+      
+      // Parse the fetched HTML into a DOM tree using a minimal config
+      const config = Config.empty().resolve()
+      const parser = new Parser(config)
+      const remoteDoc = parser.parseHtml({
+        data: result.body,
+        filename: href,
+        line: 1,
+        column: 1,
+        offset: 0,
+      })
 
-      if (
-        !reciprocalPattern1.test(result.body) &&
-        !reciprocalPattern2.test(result.body) &&
-        !reciprocalPattern3.test(result.body)
-      ) {
+      // Look for reciprocal alternate link using DOM methods
+      const remoteAlternates = remoteDoc.querySelectorAll('link[rel="alternate"][hreflang]')
+      let foundReciprocal = false
+      
+      for (const remoteAlt of remoteAlternates) {
+        const remoteHref = remoteAlt.getAttribute('href')?.value
+        const remoteHreflang = remoteAlt.getAttribute('hreflang')?.value
+        
+        if (remoteHref === canonicalUrl && remoteHreflang === expectedHreflang) {
+          foundReciprocal = true
+          break
+        }
+      }
+
+      if (!foundReciprocal) {
         this.report({
           node: alt,
           message: `Reciprocal alternate link not found on ${href} (must link back to ${canonicalUrl} with hreflang="${expectedHreflang}")`,
@@ -124,8 +133,4 @@ export default class AlternateLanguageLinksRule extends Rule<void, void> {
       }
     }
   }
-}
-
-function escapeRegExp(string: string): string {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
