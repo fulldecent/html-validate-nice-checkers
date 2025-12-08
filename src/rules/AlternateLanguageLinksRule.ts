@@ -99,7 +99,7 @@ export default class AlternateLanguageLinksRule extends Rule<void, void> {
       // The remote page must have an alternate link back to this page's canonical URL
       // with hreflang matching this page's lang
       const expectedHreflang = pageLang ?? ''
-      
+
       // Parse the fetched HTML into a DOM tree using a minimal config
       const config = Config.empty().resolve()
       const parser = new Parser(config)
@@ -114,11 +114,11 @@ export default class AlternateLanguageLinksRule extends Rule<void, void> {
       // Look for reciprocal alternate link using DOM methods
       const remoteAlternates = remoteDoc.querySelectorAll('link[rel="alternate"][hreflang]')
       let foundReciprocal = false
-      
+
       for (const remoteAlt of remoteAlternates) {
         const remoteHref = remoteAlt.getAttribute('href')?.value
         const remoteHreflang = remoteAlt.getAttribute('hreflang')?.value
-        
+
         if (remoteHref === canonicalUrl && remoteHreflang === expectedHreflang) {
           foundReciprocal = true
           break
