@@ -310,6 +310,31 @@
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     }
   ],
+  "tests/fixtures/InternalLinksRule-fragment-missing.html": [
+    {
+      "ruleId": "nice-checkers/internal-links",
+      "severity": 2,
+      "message": "Fragment \"#nonexistent-section\" not found in \"no-errors.html\".",
+      "offset": 255,
+      "line": 10,
+      "column": 49,
+      "size": 1,
+      "selector": "html > body > a:nth-child(1)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
+    },
+    {
+      "ruleId": "nice-checkers/internal-links",
+      "severity": 2,
+      "message": "Fragment \"#nonexistent-section\" not found in current document.",
+      "offset": 335,
+      "line": 11,
+      "column": 35,
+      "size": 1,
+      "selector": "html > body > a:nth-child(2)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
+    }
+  ],
+  "tests/fixtures/InternalLinksRule-fragment-valid.html": [],
   "tests/fixtures/LatestPackagesRule-violation.html": [
     {
       "ruleId": "nice-checkers/latest-packages",

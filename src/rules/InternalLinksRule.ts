@@ -22,6 +22,7 @@ const defaults: RuleOptions = {
 
 export default class InternalLinksRule extends Rule<void, RuleOptions> {
   private readonly fileExistsCache = new Map<string, boolean>()
+  private readonly fileIdsCache = new Map<string, Set<string>>()
 
   public constructor(options: Partial<RuleOptions>) {
     /* assign default values if not provided by user */
@@ -93,7 +94,7 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
     }
   }
 
-  private checkLink(internalLink: string, element: HtmlElement): void {
+  private checkLink(internalLink: string, fragment: string | null, element: HtmlElement): void {
     let resolvedPath: string
 
     // Resolve absolute paths from the web root, relative paths from the current file's location.
@@ -110,6 +111,9 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
       if (fs.existsSync(directoryPath) && fs.lstatSync(directoryPath).isDirectory()) {
         const indexPath = path.join(directoryPath, this.options.indexFile)
         if (this.doesFileExist(indexPath)) {
+          if (fragment) {
+            this.checkFragment(fragment, indexPath, path.basename(directoryPath) + '/', element)
+          }
           return // Link is valid.
         }
       }
@@ -117,10 +121,20 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
       // Case 2: Link does not end with '/'.
       // Check for a direct file match or a file with an alternative extension.
       if (this.doesFileExist(resolvedPath)) {
+        if (fragment) {
+          this.checkFragment(fragment, resolvedPath, internalLink, element)
+        }
         return // Direct file match is valid.
       }
-      if (this.options.alternativeExtensions.some(ext => this.doesFileExist(resolvedPath + ext))) {
-        return // Extensionless link is valid.
+      
+      // Check alternative extensions
+      for (const ext of this.options.alternativeExtensions) {
+        if (this.doesFileExist(resolvedPath + ext)) {
+          if (fragment) {
+            this.checkFragment(fragment, resolvedPath + ext, internalLink, element)
+          }
+          return // Extensionless link is valid.
+        }
       }
 
       // Also check if it's a directory containing an index file.
@@ -128,6 +142,9 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
       if (fs.existsSync(resolvedPath) && fs.lstatSync(resolvedPath).isDirectory()) {
         const indexPath = path.join(resolvedPath, this.options.indexFile)
         if (this.doesFileExist(indexPath)) {
+          if (fragment) {
+            this.checkFragment(fragment, indexPath, internalLink, element)
+          }
           return // Directory link is valid.
         }
       }
@@ -138,6 +155,52 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
       node: element,
       message: `Internal link to "${internalLink}" is broken.`,
     })
+  }
+
+  private getFileIds(filePath: string): Set<string> {
+    if (this.fileIdsCache.has(filePath)) {
+      return this.fileIdsCache.get(filePath) as Set<string>
+    }
+
+    const ids = new Set<string>()
+    try {
+      const content = fs.readFileSync(filePath, 'utf-8')
+      // Match id attribute: requires whitespace before 'id', handles quoted values
+      // Uses capturing group to ensure matching quotes (double or single)
+      const idRegex = /\sid=(["'])([^"']*)\1/gi
+      let match
+      while ((match = idRegex.exec(content)) !== null) {
+        if (match[2]) {
+          ids.add(match[2])
+        }
+      }
+    } catch {
+      // File cannot be read, return empty set
+    }
+    this.fileIdsCache.set(filePath, ids)
+    return ids
+  }
+
+  private checkFragment(fragment: string, filePath: string, displayPath: string, element: HtmlElement): void {
+    const ids = this.getFileIds(filePath)
+    if (!ids.has(fragment)) {
+      this.report({
+        node: element,
+        message: `Fragment "#${fragment}" not found in "${displayPath}".`,
+      })
+    }
+  }
+
+  private checkSelfFragment(fragment: string, element: HtmlElement): void {
+    // For self-links, check the current document
+    const currentFile = element.location.filename
+    const ids = this.getFileIds(currentFile)
+    if (!ids.has(fragment)) {
+      this.report({
+        node: element,
+        message: `Fragment "#${fragment}" not found in current document.`,
+      })
+    }
   }
 
   private tagReady(event: TagReadyEvent): void {
@@ -158,8 +221,19 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
       return
     }
 
+    // Extract fragment if present
+    const fragmentMatch = rawUrl.match(/#([^?]*)/)
+    const fragment = fragmentMatch?.[1] ?? null
+
     // Strip fragment and query parameters.
     const url = rawUrl.replace(/[#?].*$/, '')
+    
+    // Handle self-links (just a fragment, no file path)
+    if (!url && fragment) {
+      this.checkSelfFragment(fragment, target)
+      return
+    }
+    
     if (!url) {
       return
     }
@@ -171,6 +245,6 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
     }
 
     // The URL is internal, now check if it's valid.
-    this.checkLink(url, target)
+    this.checkLink(url, fragment, target)
   }
 }
