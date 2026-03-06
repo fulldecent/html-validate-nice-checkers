@@ -212,3 +212,79 @@ describe('fixture validation against required output', () => {
     })
   }
 })
+
+describe('match-regex rule', () => {
+  const plugin = NiceCheckersPlugin
+
+  it('reports mustMatch violation when required HTML element is missing', async () => {
+    const loader = new StaticConfigLoader({
+      plugins: [plugin],
+      rules: {
+        'nice-checkers/match-regex': [
+          'error',
+          {
+            mustMatch: ['<object [^>]*data='],
+          },
+        ],
+      },
+    })
+    const htmlvalidate = new HtmlValidate(loader)
+    const filePath = join(fixturesDir, 'MatchRegexRule-violation.html')
+    const report = await htmlvalidate.validateFile(filePath)
+    const messages = report.results[0]?.messages ?? []
+    expect(messages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ruleId: 'nice-checkers/match-regex',
+          message: 'Page source does not match required pattern: <object [^>]*data=',
+        }),
+      ])
+    )
+  })
+
+  it('reports mustNotMatch violation when forbidden word is present', async () => {
+    const loader = new StaticConfigLoader({
+      plugins: [plugin],
+      rules: {
+        'nice-checkers/match-regex': [
+          'error',
+          {
+            mustNotMatch: ['naughty'],
+          },
+        ],
+      },
+    })
+    const htmlvalidate = new HtmlValidate(loader)
+    const filePath = join(fixturesDir, 'MatchRegexRule-violation.html')
+    const report = await htmlvalidate.validateFile(filePath)
+    const messages = report.results[0]?.messages ?? []
+    expect(messages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ruleId: 'nice-checkers/match-regex',
+          message: 'Page source matches forbidden pattern: naughty',
+        }),
+      ])
+    )
+  })
+
+  it('passes when page satisfies all regex constraints', async () => {
+    const loader = new StaticConfigLoader({
+      plugins: [plugin],
+      rules: {
+        'nice-checkers/match-regex': [
+          'error',
+          {
+            mustMatch: ['<meta charset'],
+            mustNotMatch: ['naughty'],
+          },
+        ],
+      },
+    })
+    const htmlvalidate = new HtmlValidate(loader)
+    const filePath = join(fixturesDir, 'no-errors.html')
+    const report = await htmlvalidate.validateFile(filePath)
+    const messages = report.results[0]?.messages ?? []
+    expect(messages).toEqual([])
+  })
+})

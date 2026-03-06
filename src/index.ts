@@ -11,6 +11,7 @@ import ExternalLinksRule from './rules/ExternalLinksRule'
 import HttpsLinksRule from './rules/HttpsLinksRule'
 import InternalLinksRule from './rules/InternalLinksRule'
 import LatestPackagesRule from './rules/LatestPackagesRule'
+import MatchRegexRule from './rules/MatchRegexRule'
 import MailtoAwesomeRule from './rules/MailtoAwesomeRule'
 import NoJqueryRule from './rules/NoJqueryRule'
 import SchemaOrgJsonLdRule from './rules/SchemaOrgJsonLdRule'
@@ -26,6 +27,7 @@ const plugin: Plugin = {
     'nice-checkers/https-links': HttpsLinksRule,
     'nice-checkers/internal-links': InternalLinksRule,
     'nice-checkers/latest-packages': LatestPackagesRule,
+    'nice-checkers/match-regex': MatchRegexRule,
     'nice-checkers/mailto-awesome': MailtoAwesomeRule,
     'nice-checkers/no-jquery': NoJqueryRule,
     'nice-checkers/schema-org-json-ld': SchemaOrgJsonLdRule,
@@ -41,6 +43,7 @@ const plugin: Plugin = {
         'nice-checkers/https-links': ['error'],
         'nice-checkers/internal-links': ['error'],
         'nice-checkers/latest-packages': ['warn'],
+        'nice-checkers/match-regex': ['off'],
         'nice-checkers/mailto-awesome': ['error'],
         'nice-checkers/no-jquery': ['error'],
         'nice-checkers/schema-org-json-ld': ['error'],
