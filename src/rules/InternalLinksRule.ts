@@ -126,7 +126,7 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
         }
         return // Direct file match is valid.
       }
-      
+
       // Check alternative extensions
       for (const ext of this.options.alternativeExtensions) {
         if (this.doesFileExist(resolvedPath + ext)) {
@@ -181,7 +181,12 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
     return ids
   }
 
-  private checkFragment(fragment: string, filePath: string, displayPath: string, element: HtmlElement): void {
+  private checkFragment(
+    fragment: string,
+    filePath: string,
+    displayPath: string,
+    element: HtmlElement
+  ): void {
     const ids = this.getFileIds(filePath)
     if (!ids.has(fragment)) {
       this.report({
@@ -227,13 +232,13 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
 
     // Strip fragment and query parameters.
     const url = rawUrl.replace(/[#?].*$/, '')
-    
+
     // Handle self-links (just a fragment, no file path)
     if (!url && fragment) {
       this.checkSelfFragment(fragment, target)
       return
     }
-    
+
     if (!url) {
       return
     }

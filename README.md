@@ -6,7 +6,7 @@ An opinionated collection of essential HTML validation rules that promote best p
 
 ## Features
 
-- :white_check_mark: **Turnkey validation**: 8 rules covering SEO, security, accessibility, and best practices
+- :white_check_mark: **Turnkey validation**: 11 rules covering SEO, security, accessibility, and best practices
 - :white_check_mark: **TypeScript**: full type definitions included
 - :warning: **Dual module support**: works with both ESM (`import`) and CJS (`require`) (known issue: ESM and CommonJS builds are [sometimes not building correctly](https://github.com/fulldecent/html-validate-nice-checkers/issues/6))
 - :white_check_mark: **Tree shakeable**: import only what you need
@@ -308,6 +308,55 @@ Ensures that package assets loaded from CDNs (like jsDelivr) are using the lates
 | `timeoutSeconds`     | `number`   | `10`                         | Request timeout in seconds                                  |
 | `cacheDatabasePath`  | `string`   | `"cache/latest-packages.db"` | Path to the cache database file                             |
 | `skipUrlPatterns`    | `string[]` | `[]`                         | Array of URL patterns to skip checking                      |
+
+### `nice-checkers/match-regex`
+
+Requires page source to match all `mustMatch` regexes and none of the `mustNotMatch` regexes. This rule is off by default because it requires user-provided patterns.
+
+Use this to enforce that specific content or HTML elements are present on every page, or to forbid certain words or patterns. All patterns are evaluated with the `s` (dotAll) flag enabled, so they can match across multiple lines.
+
+When configuring via JSON, patterns must be given as strings. When configuring via JavaScript or TypeScript, each entry may be either a string or a `RegExp` instance. For `RegExp` inputs, all existing user flags are preserved and `s` is added if not already present.
+
+For example, you might require a specific footer script on every page:
+
+```json
+{
+  "rules": {
+    "nice-checkers/match-regex": [
+      "error",
+      {
+        "mustMatch": [
+          "<script src=\"/assets/global/site\\.js\\?[0-9a-f]+\" async></script>\\s*</body>"
+        ],
+        "mustNotMatch": ["naughty"]
+      }
+    ]
+  }
+}
+```
+
+### Configuration
+
+```json
+{
+  "rules": {
+    "nice-checkers/match-regex": [
+      "error",
+      {
+        "mustMatch": [],
+        "mustNotMatch": []
+      }
+    ]
+  }
+}
+```
+
+### Configuration options
+
+| Option         | Type                   | Default | Description                                  |
+| -------------- | ---------------------- | ------- | -------------------------------------------- |
+| `mustMatch`    | `(string \| RegExp)[]` | `[]`    | Patterns that the page source must match     |
+| `mustNotMatch` | `(string \| RegExp)[]` | `[]`    | Patterns that the page source must not match |
 
 ### `nice-checkers/mailto-awesome`
 
