@@ -287,4 +287,54 @@ describe('match-regex rule', () => {
     const messages = report.results[0]?.messages ?? []
     expect(messages).toEqual([])
   })
+
+  it('matches across multiple lines with dotAll flag', async () => {
+    const loader = new StaticConfigLoader({
+      plugins: [plugin],
+      rules: {
+        'nice-checkers/match-regex': [
+          'error',
+          {
+            mustMatch: ['<section.*</section>\\s*</body>'],
+          },
+        ],
+      },
+    })
+    const htmlvalidate = new HtmlValidate(loader)
+    const filePath = join(fixturesDir, 'no-errors.html')
+    const report = await htmlvalidate.validateFile(filePath)
+    const messages = report.results[0]?.messages ?? []
+    expect(messages).toEqual([])
+  })
+
+  it('supports RegExp objects with existing flags', async () => {
+    const loader = new StaticConfigLoader({
+      plugins: [plugin],
+      rules: {
+        'nice-checkers/match-regex': [
+          'error',
+          {
+            mustMatch: [/<section.*<\/section>/],
+            mustNotMatch: [/NAUGHTY/i],
+          } as any,
+        ],
+      },
+    })
+    const htmlvalidate = new HtmlValidate(loader)
+    const filePath = join(fixturesDir, 'MatchRegexRule-violation.html')
+    const report = await htmlvalidate.validateFile(filePath)
+    const messages = report.results[0]?.messages ?? []
+    expect(messages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ruleId: 'nice-checkers/match-regex',
+          message: expect.stringContaining('does not match required pattern'),
+        }),
+        expect.objectContaining({
+          ruleId: 'nice-checkers/match-regex',
+          message: expect.stringContaining('matches forbidden pattern'),
+        }),
+      ])
+    )
+  })
 })

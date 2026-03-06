@@ -1,8 +1,8 @@
 import { type RuleDocumentation, type DOMReadyEvent, type SchemaObject, Rule } from 'html-validate'
 
 interface RuleOptions {
-  mustMatch: string[]
-  mustNotMatch: string[]
+  mustMatch: (string | RegExp)[]
+  mustNotMatch: (string | RegExp)[]
 }
 
 const defaults: RuleOptions = {
@@ -11,8 +11,33 @@ const defaults: RuleOptions = {
 }
 
 export default class MatchRegexRule extends Rule<void, RuleOptions> {
+  private readonly mustMatchCompiled: RegExp[]
+  private readonly mustNotMatchCompiled: RegExp[]
+
   public constructor(options: Partial<RuleOptions>) {
     super({ ...defaults, ...options })
+    this.mustMatchCompiled = this.compilePatterns(this.options.mustMatch, 'mustMatch')
+    this.mustNotMatchCompiled = this.compilePatterns(this.options.mustNotMatch, 'mustNotMatch')
+  }
+
+  private compilePatterns(patterns: (string | RegExp)[], optionName: string): RegExp[] {
+    return patterns
+      .map(pattern => {
+        try {
+          if (pattern instanceof RegExp) {
+            // Preserve existing flags and add 's' (dotAll) if not already present
+            const flags = pattern.flags.includes('s') ? pattern.flags : pattern.flags + 's'
+            return new RegExp(pattern.source, flags)
+          }
+          return new RegExp(pattern, 's')
+        } catch (e) {
+          console.error(
+            `[html-validate-nice-checkers] Invalid regex pattern in '${optionName}' configuration: "${pattern}"`
+          )
+          return null
+        }
+      })
+      .filter((regex): regex is RegExp => regex !== null)
   }
 
   public static override schema(): SchemaObject {
@@ -46,22 +71,20 @@ export default class MatchRegexRule extends Rule<void, RuleOptions> {
     this.on('dom:ready', (event: DOMReadyEvent) => {
       const rawHTML = event.source.data
 
-      for (const pattern of this.options.mustMatch) {
-        const regex = new RegExp(pattern, 's')
+      for (const regex of this.mustMatchCompiled) {
         if (!regex.test(rawHTML)) {
           this.report({
             node: event.document.root,
-            message: `Page source does not match required pattern: ${pattern}`,
+            message: `Page source does not match required pattern: ${regex.source}`,
           })
         }
       }
 
-      for (const pattern of this.options.mustNotMatch) {
-        const regex = new RegExp(pattern, 's')
+      for (const regex of this.mustNotMatchCompiled) {
         if (regex.test(rawHTML)) {
           this.report({
             node: event.document.root,
-            message: `Page source matches forbidden pattern: ${pattern}`,
+            message: `Page source matches forbidden pattern: ${regex.source}`,
           })
         }
       }

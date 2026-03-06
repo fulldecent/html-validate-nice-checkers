@@ -313,7 +313,9 @@ Ensures that package assets loaded from CDNs (like jsDelivr) are using the lates
 
 Requires page source to match all `mustMatch` regexes and none of the `mustNotMatch` regexes. This rule is off by default because it requires user-provided patterns.
 
-Use this to enforce that specific content or HTML elements are present on every page, or to forbid certain words or patterns. Regexes use the `s` (dotAll) flag, so they can match across multiple lines.
+Use this to enforce that specific content or HTML elements are present on every page, or to forbid certain words or patterns. All patterns are evaluated with the `s` (dotAll) flag enabled, so they can match across multiple lines.
+
+When configuring via JSON, patterns must be given as strings. When configuring via JavaScript or TypeScript, each entry may be either a string or a `RegExp` instance. For `RegExp` inputs, all existing user flags are preserved and `s` is added if not already present.
 
 For example, you might require a specific footer script on every page:
 
@@ -351,10 +353,10 @@ For example, you might require a specific footer script on every page:
 
 ### Configuration options
 
-| Option         | Type       | Default | Description                                                 |
-| -------------- | ---------- | ------- | ----------------------------------------------------------- |
-| `mustMatch`    | `string[]` | `[]`    | Array of regex patterns that the page source must match     |
-| `mustNotMatch` | `string[]` | `[]`    | Array of regex patterns that the page source must not match |
+| Option         | Type                   | Default | Description                                  |
+| -------------- | ---------------------- | ------- | -------------------------------------------- |
+| `mustMatch`    | `(string \| RegExp)[]` | `[]`    | Patterns that the page source must match     |
+| `mustNotMatch` | `(string \| RegExp)[]` | `[]`    | Patterns that the page source must not match |
 
 ### `nice-checkers/mailto-awesome`
 
