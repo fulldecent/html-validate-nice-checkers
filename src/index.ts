@@ -47,6 +47,12 @@ const plugin: Plugin = {
         'nice-checkers/mailto-awesome': ['error'],
         'nice-checkers/no-jquery': ['error'],
         'nice-checkers/schema-org-json-ld': ['error'],
+        // HTML minifiers (e.g. @minify-html/node) strip default type attributes from
+        // <button> and <input> elements because they are redundant per the HTML spec.
+        // These core rules conflict with that behaviour, so we disable them here.
+        // See: https://github.com/fulldecent/html-validate-nice-checkers/issues/23
+        'no-implicit-button-type': ['off'],
+        'no-implicit-input-type': ['off'],
       },
     },
   },

@@ -447,6 +447,39 @@ Note that these sources we reference have a conflict. One says that you may use 
 - [Google: specify alternate language pages](https://developers.google.com/search/docs/specialty/international/localized-versions)
 - [W3C: link type 'alternate'](https://html.spec.whatwg.org/multipage/links.html#link-type-alternate)
 
+## Disabled html-validate core rules
+
+`nice-checkers-plugin:recommended` explicitly turns off the following built-in html-validate rules because they conflict with common HTML minification tools.
+
+### `no-implicit-button-type` and `no-implicit-input-type`
+
+HTML minifiers such as [`@minify-html/node`](https://github.com/wilsonzlin/minify-html) strip the `type` attribute from `<button>` and `<input>` elements when it equals the HTML-spec default value (e.g. `type="submit"` on `<button>`, `type="text"` on `<input>`). This is valid per the spec and reduces page size, but it causes false-positive warnings from these two core rules when validating **minified** output.
+
+```js
+import { minify } from "@minify-html/node";
+
+const html = '<button type="submit">Go</button><input type="text" name="q">';
+const minified = minify(Buffer.from(html), { /* options */ });
+// → "<button>Go</button><input name=q>"
+// type="submit" and type="text" are stripped as they are HTML defaults
+```
+
+Extending `nice-checkers-plugin:recommended` disables both rules so that projects validating minified output do not need a workaround.
+
+If you author your HTML by hand (i.e. you are **not** validating minified output) and want to enforce these rules, you can re-enable them explicitly in your own configuration:
+
+```json
+{
+  "extends": ["htmlvalidate:recommended", "nice-checkers-plugin:recommended"],
+  "rules": {
+    "no-implicit-button-type": "error",
+    "no-implicit-input-type": "error"
+  }
+}
+```
+
+See [issue #23](https://github.com/fulldecent/html-validate-nice-checkers/issues/23) for the full discussion.
+
 ## Development
 
 This package is built with TypeScript and supports both ESM and CommonJS module systems. Thank you for contributing improvements to this project!
