@@ -456,10 +456,12 @@ Note that these sources we reference have a conflict. One says that you may use 
 HTML minifiers such as [`@minify-html/node`](https://github.com/wilsonzlin/minify-html) strip the `type` attribute from `<button>` and `<input>` elements when it equals the HTML-spec default value (e.g. `type="submit"` on `<button>`, `type="text"` on `<input>`). This is valid per the spec and reduces page size, but it causes false-positive warnings from these two core rules when validating **minified** output.
 
 ```js
-import { minify } from "@minify-html/node";
+import { minify } from '@minify-html/node'
 
-const html = '<button type="submit">Go</button><input type="text" name="q">';
-const minified = minify(Buffer.from(html), { /* options */ });
+const html = '<button type="submit">Go</button><input type="text" name="q">'
+const minified = minify(Buffer.from(html), {
+  /* options */
+})
 // → "<button>Go</button><input name=q>"
 // type="submit" and type="text" are stripped as they are HTML defaults
 ```
