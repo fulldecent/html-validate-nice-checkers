@@ -1,13 +1,8 @@
 /**
- * Standalone mock HTTP server script
+ * Standalone mock HTTP server script.
  *
- * This script runs the mock server in its own process, avoiding event loop
- * deadlock with html-validate's synchronous HTTP requests.
- *
- * The mockhttp package provides httpbin-compatible routes out of the box:
- * - /status/XXX - returns that HTTP status code
- * - /redirect-to?url=...&status_code=301 - performs redirects
- * See https://github.com/jaredwray/mockhttp for full documentation.
+ * This is intentionally plain ESM JavaScript so the child process can run it
+ * with `yarn node` in a Yarn PnP environment without depending on `tsx`.
  */
 
 import { mockhttp } from '@jaredwray/mockhttp'
@@ -20,8 +15,6 @@ const server = new mockhttp({
 
 await server.start()
 
-// Inject custom responses for AlternateLanguageLinksRule tests
-// Page that does NOT have reciprocal link back (for violation test)
 server.taps.inject(
   {
     response: `<!doctype html>
@@ -39,7 +32,6 @@ server.taps.inject(
   { url: '/fr/alt-to-fr' }
 )
 
-// Page that does NOT have reciprocal link back (for violation test)
 server.taps.inject(
   {
     response: `<!doctype html>
@@ -58,7 +50,6 @@ server.taps.inject(
   { url: '/en/alt-to-en' }
 )
 
-// Page with relative href test
 server.taps.inject(
   {
     response: `<!doctype html>
@@ -77,7 +68,6 @@ server.taps.inject(
   { url: '/en/alt-relative-to-en' }
 )
 
-// Page with hreflang mismatch test
 server.taps.inject(
   {
     response: `<!doctype html>
@@ -95,7 +85,6 @@ server.taps.inject(
   { url: '/en/alt-to-self-as-es' }
 )
 
-// Page with reciprocal link to FR
 server.taps.inject(
   {
     response: `<!doctype html>
@@ -114,7 +103,6 @@ server.taps.inject(
   { url: '/en/alt-to-en-fr' }
 )
 
-// Generic accessible French page with reciprocal back to English
 server.taps.inject(
   {
     response: `<!doctype html>
@@ -133,7 +121,6 @@ server.taps.inject(
   { url: '/fr/alt-to-fr-en' }
 )
 
-// Spanish page with link to English (but English doesn't reciprocate)
 server.taps.inject(
   {
     response: `<!doctype html>
@@ -152,10 +139,8 @@ server.taps.inject(
   { url: '/es/alt-to-es-en' }
 )
 
-// Use stdout.write to ensure immediate flush when piped
 process.stdout.write(`READY:${server.port}\n`)
 
-// Keep the process running until killed
 process.on('SIGTERM', async () => {
   await server.close()
   process.exit(0)
