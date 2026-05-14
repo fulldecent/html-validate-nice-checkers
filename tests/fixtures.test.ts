@@ -19,9 +19,8 @@ type ReportsByFile = {
 // Start the mock server in a child process to avoid event loop deadlock
 function startMockServer(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const serverScript = join(__dirname, 'mock/http-server.ts')
-    // Use yarn tsx to run the TypeScript file in Yarn PnP environment
-    mockServerProcess = spawn('yarn', ['tsx', serverScript], {
+    const serverScript = join(__dirname, 'mock/http-server.mjs')
+    mockServerProcess = spawn('yarn', ['node', serverScript], {
       stdio: ['pipe', 'pipe', 'pipe'],
       cwd: join(__dirname, '..'),
     })

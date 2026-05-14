@@ -418,6 +418,28 @@
       "size": 6,
       "selector": "html > body > script:nth-child(8)",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#schema-org-json-ld"
+    },
+    {
+      "ruleId": "nice-checkers/schema-org-json-ld",
+      "severity": 2,
+      "message": "Schema.org property \"bogus-input\" is not a valid property.",
+      "offset": 3261,
+      "line": 117,
+      "column": 6,
+      "size": 6,
+      "selector": "html > body > script:nth-child(13)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#schema-org-json-ld"
+    },
+    {
+      "ruleId": "nice-checkers/schema-org-json-ld",
+      "severity": 2,
+      "message": "Schema.org property \"query-input\" is not a valid property.",
+      "offset": 3818,
+      "line": 131,
+      "column": 6,
+      "size": 6,
+      "selector": "html > body > script:nth-child(14)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#schema-org-json-ld"
     }
   ],
   "tests/fixtures/no-errors.html": []

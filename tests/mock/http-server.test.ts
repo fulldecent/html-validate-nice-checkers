@@ -12,7 +12,10 @@ async function fetchWithStatus(path: string) {
 
 function startServer(): Promise<void> {
   return new Promise((resolve, reject) => {
-    proc = spawn('yarn', ['tsx', 'tests/mock/http-server.ts'])
+    proc = spawn('yarn', ['node', 'tests/mock/http-server.mjs'], {
+      cwd: process.cwd(),
+      stdio: ['pipe', 'pipe', 'pipe'],
+    })
     const timeout = setTimeout(() => reject(new Error('mock server start timeout')), 5000)
     proc.stdout?.on('data', (data: unknown) => {
       const str = String(data)

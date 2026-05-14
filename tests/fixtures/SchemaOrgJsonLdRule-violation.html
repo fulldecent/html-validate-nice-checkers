@@ -89,5 +89,51 @@
         ]
       }
     </script>
+
+    <!--
+      7. PASS: SearchAction with "query-input" property. The "-input" suffix is a
+      Schema.org Actions annotation convention (schema.org/docs/actions.html Part 4)
+      that applies to any known property; "query" is a valid property, so "query-input"
+      must be accepted.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org/",
+        "@type": "WebSite",
+        "name": "MySite",
+        "url": "https://mysite.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "{search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
+    <!--
+      8. FAIL: "-input" annotation where the base property ("bogus") is not a valid
+      Schema.org property.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SearchAction",
+        "bogus-input": "this base property does not exist"
+      }
+    </script>
+
+    <!--
+      9. FAIL: "-input" annotation on a top-level non-Action type. The -input/-output
+      convention (schema.org/docs/actions.html Part 4) is only valid within the
+      property graph of an Action or its subtypes. "query" is a valid property, but
+      "query-input" on a bare WebSite (outside any Action context) must be rejected.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "query-input": "this annotation is outside any Action context"
+      }
+    </script>
   </body>
 </html>

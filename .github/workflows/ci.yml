@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x, 22.x, 24.x] # All versions that are "active", "current" or "maintenance" support by Node.js
+        node-version: [22.x, 24.x, 26.x] # All versions that are "active", "current" or "maintenance" support by Node.js
 
     steps:
       - name: Checkout code
