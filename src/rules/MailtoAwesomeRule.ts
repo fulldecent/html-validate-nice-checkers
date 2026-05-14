@@ -30,7 +30,7 @@ export default class MailtoAwesomeRule extends Rule<void, RuleOptions> {
   public override documentation(): RuleDocumentation {
     return {
       description: 'Enforce that mailto: links contain specific parameters.',
-      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules',
+      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules',
     }
   }
 

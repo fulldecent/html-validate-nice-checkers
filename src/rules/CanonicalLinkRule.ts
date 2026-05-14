@@ -4,7 +4,7 @@ export default class CanonicalLinkRule extends Rule {
   public override documentation(): RuleDocumentation {
     return {
       description: "Requires a <link rel='canonical'> in the <head> with a specific href format.",
-      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules',
+      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules',
     }
   }
 

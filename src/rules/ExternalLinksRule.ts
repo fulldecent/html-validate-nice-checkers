@@ -117,7 +117,7 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
   public override documentation(): RuleDocumentation {
     return {
       description: 'Require all external links to be live.',
-      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules',
+      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules',
     }
   }
 

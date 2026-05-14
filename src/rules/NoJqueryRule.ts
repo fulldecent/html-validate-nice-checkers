@@ -4,7 +4,7 @@ export default class NoJqueryRule extends Rule {
   public override documentation(): RuleDocumentation {
     return {
       description: 'Disallow script tag with src including jQuery',
-      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules',
+      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules',
     }
   }
 

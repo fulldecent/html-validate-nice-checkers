@@ -25,7 +25,7 @@ export default class AlternateLanguageUrlRule extends Rule {
     return {
       description:
         'Requires <link rel="alternate" hreflang="..."> to use fully qualified URLs with protocol (https://).',
-      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules',
+      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules',
     }
   }
 

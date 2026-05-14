@@ -33,7 +33,7 @@
       "column": 6,
       "size": 4,
       "selector": "html > head > link:nth-child(5)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     },
     {
       "ruleId": "nice-checkers/alternate-language-links",
@@ -117,7 +117,7 @@
       "column": 6,
       "size": 4,
       "selector": "html > head > link:nth-child(4)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     },
     {
       "ruleId": "nice-checkers/alternate-language-links",
@@ -163,7 +163,7 @@
       "column": 4,
       "size": 4,
       "selector": "html > head",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     }
   ],
   "tests/fixtures/ExternalLinkRule-manually-reviewed.html": [
@@ -176,7 +176,7 @@
       "column": 7,
       "size": 1,
       "selector": "html > body > a:nth-child(4)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     },
     {
       "ruleId": "nice-checkers/external-links",
@@ -187,7 +187,7 @@
       "column": 7,
       "size": 1,
       "selector": "html > body > a:nth-child(6)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     }
   ],
   "tests/fixtures/ExternalLinkRule-skip-canonical-alternate.html": [
@@ -236,7 +236,7 @@
       "column": 47,
       "size": 1,
       "selector": "html > body > a:nth-child(1)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     },
     {
       "ruleId": "nice-checkers/external-links",
@@ -247,7 +247,7 @@
       "column": 47,
       "size": 1,
       "selector": "html > body > a:nth-child(2)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     },
     {
       "ruleId": "nice-checkers/external-links",
@@ -258,7 +258,7 @@
       "column": 7,
       "size": 1,
       "selector": "html > body > a:nth-child(3)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     },
     {
       "ruleId": "nice-checkers/external-links",
@@ -269,7 +269,7 @@
       "column": 40,
       "size": 1,
       "selector": "html > body > a:nth-child(4)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     },
     {
       "ruleId": "nice-checkers/external-links",
@@ -280,7 +280,7 @@
       "column": 34,
       "size": 1,
       "selector": "html > body > a:nth-child(5)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     }
   ],
   "tests/fixtures/HttpsLinksRule-violation.html": [],
@@ -345,7 +345,7 @@
       "column": 5,
       "size": 1,
       "selector": "html > head > script",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     }
   ],
   "tests/fixtures/MailtoAwesomeRule-violation.html": [
@@ -358,7 +358,7 @@
       "column": 65,
       "size": 1,
       "selector": "html > body > a:nth-child(1)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     },
     {
       "ruleId": "nice-checkers/mailto-awesome",
@@ -369,7 +369,7 @@
       "column": 77,
       "size": 1,
       "selector": "html > body > a:nth-child(2)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     }
   ],
   "tests/fixtures/NoJqueryRule-violation.html": [
@@ -382,7 +382,7 @@
       "column": 5,
       "size": 1,
       "selector": "html > head > script",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules"
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     }
   ],
   "tests/fixtures/SchemaOrgJsonLdRule-violation.html": [

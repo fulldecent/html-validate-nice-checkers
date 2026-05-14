@@ -67,7 +67,7 @@ export default class LatestPackagesRule extends Rule<void, RuleOptions> {
     return {
       description:
         'Ensures that package assets loaded from a CDN are the latest version and have SRI attributes.',
-      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.m#rules',
+      url: 'https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules',
     }
   }
 
