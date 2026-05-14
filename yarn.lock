@@ -840,7 +840,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@fulldecent/nice-checkers-plugin@workspace:."
   dependencies:
-    "@jaredwray/mockhttp": "npm:^1.4.0"
+    "@jaredwray/mockhttp": "npm:^1.5.1"
     "@types/better-sqlite3": "npm:^7.6.13"
     "@types/node": "npm:^25.8.0"
     "@types/shell-quote": "npm:^1.7.5"
@@ -858,6 +858,9 @@ __metadata:
     vitest: "npm:^4.1.6"
   peerDependencies:
     html-validate: ^10.0.0
+  dependenciesMeta:
+    better-sqlite3:
+      built: true
   languageName: unknown
   linkType: soft
 
@@ -945,7 +948,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jaredwray/mockhttp@npm:^1.4.0":
+"@jaredwray/mockhttp@npm:^1.5.1":
   version: 1.5.1
   resolution: "@jaredwray/mockhttp@npm:1.5.1"
   dependencies:
