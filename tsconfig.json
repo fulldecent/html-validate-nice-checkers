@@ -31,6 +31,9 @@
     // Skip type checking for node_modules
     "skipLibCheck": true,
 
+    // Suppress TS5101 deprecation warnings from tsup's DTS build (baseUrl in transitive deps)
+    "ignoreDeprecations": "6.0",
+
     // To allow importing the JSON file
     "resolveJsonModule": true
     // "esModuleInterop": true // is already set above
