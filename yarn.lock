@@ -843,7 +843,7 @@ __metadata:
     typescript: "npm:^6.0.3"
     vitest: "npm:^4.1.7"
   peerDependencies:
-    html-validate: ^10.0.0
+    html-validate: ^10.0.0 || ^11.0.0
   dependenciesMeta:
     better-sqlite3:
       built: true

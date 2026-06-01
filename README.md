@@ -567,7 +567,7 @@ When running `yarn test` to test Nice Checkers itself, you may see two warnings 
 3. Bump yarn dependencies if appropriate (`yarn upgrade-interactive`).
 4. Bump package.json `peerDependencies` if new `html-validate` is available.
 5. Bump GitHub Actions `uses:` versions if appropriate.
-6. Ensure `yarn format && yarn lint && yarn build && yarn test && echo ✅` all pass.
+6. Ensure `yarn && yarn format && yarn lint && yarn build && yarn test && echo ✅` all pass.
 7. Ensure CI passes.
 8. Bump package.json version. (Use a separate commit by itself for this.)
 9. Use GitHub website to create a tag and a release.
