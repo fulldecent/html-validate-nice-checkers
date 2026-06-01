@@ -6,7 +6,7 @@
   "license": "MIT",
   "homepage": "https://github.com/fulldecent/html-validate-nice-checkers/#readme",
   "bugs": {
-    "url": "https://github.com/fulldecent/html-validate-nice-checkers//issues"
+    "url": "https://github.com/fulldecent/html-validate-nice-checkers/issues"
   },
   "repository": {
     "type": "git",
@@ -71,10 +71,10 @@
     "vitest": "^4.1.7"
   },
   "peerDependencies": {
-    "html-validate": "^10.0.0"
+    "html-validate": "^10.0.0 || ^11.0.0"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "packageManager": "yarn@4.15.0",
   "dependencies": {
