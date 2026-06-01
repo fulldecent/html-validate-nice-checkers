@@ -8,7 +8,7 @@ An opinionated collection of essential HTML validation rules that promote best p
 
 - :white_check_mark: **Turnkey validation**: 11 rules covering SEO, security, accessibility, and best practices
 - :white_check_mark: **TypeScript**: full type definitions included
-- :warning: **Dual module support**: works with both ESM (`import`) and CJS (`require`) (known issue: ESM and CommonJS builds are [sometimes not building correctly](https://github.com/fulldecent/html-validate-nice-checkers/issues/6))
+- :white_check_mark: **Dual module support**: works with both ESM (`import`) and CJS (`require`)
 - :white_check_mark: **Tree shakeable**: import only what you need
 - :white_check_mark: **Modern tooling**: [built with tsup](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/tsup.config.ts), [tested with Vitest](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/vitest.config.ts), [good IDE hinting](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/tsconfig.json) and [enforced style checking](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/.prettierrc)
 - :white_check_mark: **Comprehensive testing**: high test coverage with realistic fixtures
@@ -514,9 +514,7 @@ See [issue #23](https://github.com/fulldecent/html-validate-nice-checkers/issues
 
 ## Development
 
-This package is built with TypeScript and supports both ESM and CommonJS module systems. Thank you for contributing improvements to this project!
-
-:warning: Known issue: ESM and CommonnJS builds are [sometimes not building correctly](https://github.com/fulldecent/html-validate-nice-checkers/issues/6).
+Thank you for contributing improvements to this project!
 
 ### Install
 
