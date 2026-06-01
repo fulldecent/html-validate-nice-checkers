@@ -557,9 +557,18 @@ and YES, use workspace TypeScript version.
 
 When running `yarn test` to test Nice Checkers itself, you may see two warnings about missing "root" paths. These come from the mock HTTP server (`@jaredwray/mockhttp`) which is only used in our test suite. The warnings are harmless and do not affect test results. We consider this an error in the upstream mock HTTP server package. These warnings do not appear for downstream users who install Nice Checkers to validate their own websites.
 
-## Publishing to [npm registry](https://www.npmjs.com/package/@fulldecent/nice-checkers-plugin)
+## Release to [npm registry](https://www.npmjs.com/package/@fulldecent/nice-checkers-plugin)
 
-@fulldecent will periodically create a GitHub release and this triggers [the npm publish workflow](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/.github/workflows/publish.yml).
+1. Add any features that will be in the release.
+2. Bump yarn version if appropriate (`yarn set version latest`)
+3. Bump yarn dependencies if appropriate (`yarn upgrade-interactive`)
+4. Bump GitHub Actions `uses:` versions if appropriate
+5. Ensure `yarn format && yarn lint && yarn build && yarn test && echo ✅` all pass.
+6. Ensure CI passes.
+7. Bump package.json version. (Use a separate commit by itself for this.)
+8. Use GitHub website to create a tag and a release.
+
+This releases triggers the [the npm publish workflow](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/.github/workflows/publish.yml).
 
 ## Maintenance
 
