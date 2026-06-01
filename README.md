@@ -449,10 +449,10 @@ Note that these sources we reference have a conflict. One says that you may use 
 
 ### Configuration options
 
-| Option                  | Type                                                    | Default | Description                                                                                                  |
-| ----------------------- | ------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
-| `urlRewrites`           | `{ pattern: string, replacement: string }[]`           | `[]`    | Regex rewrite rules applied to each alternate URL before reciprocal validation. Useful for local fixtures. |
-| `appendHtmlExtension`   | `boolean`                                               | `false` | If true, local rewritten URLs without an extension are also checked with a `.html` suffix.                |
+| Option                | Type                                         | Default | Description                                                                                                |
+| --------------------- | -------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
+| `urlRewrites`         | `{ pattern: string, replacement: string }[]` | `[]`    | Regex rewrite rules applied to each alternate URL before reciprocal validation. Useful for local fixtures. |
+| `appendHtmlExtension` | `boolean`                                    | `false` | If true, local rewritten URLs without an extension are also checked with a `.html` suffix.                 |
 
 ### Example configuration for local build validation
 
