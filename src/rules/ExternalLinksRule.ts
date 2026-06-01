@@ -328,7 +328,9 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
     }
 
     // If a rewrite rule maps this URL to a local path, check the file on disk.
-    const rewritten = applyUrlRewrites(url, this.compiledUrlRewrites)
+    // Strip fragment and query string first — the local file system has neither.
+    const urlForRewrite = url.replace(/[?#].*$/, '')
+    const rewritten = applyUrlRewrites(urlForRewrite, this.compiledUrlRewrites)
     if (!/^https?:\/\//i.test(rewritten)) {
       const resolved = path.isAbsolute(rewritten) ? rewritten : path.resolve(rewritten)
       const candidates = getLocalFileCandidates(
