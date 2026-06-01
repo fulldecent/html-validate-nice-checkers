@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>External link rewrite — passing</title>
+    <link rel="canonical" href="https://example.invalid/en-main" />
+  </head>
+
+  <body>
+    <!-- Both URLs rewrite to local files that exist on disk; no network call is made. -->
+    <a href="https://example.invalid/other-page">Other page (flat .html file)</a>
+    <a href="https://example.invalid/fr-main">FR page (directory index.html)</a>
+  </body>
+</html>

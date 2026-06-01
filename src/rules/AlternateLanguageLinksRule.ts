@@ -9,25 +9,21 @@ import { syncFetch } from '../utils/syncFetch'
 import * as cheerio from 'cheerio'
 import fs from 'node:fs'
 import path from 'node:path'
-
-interface UrlRewrite {
-  pattern: string
-  replacement: string
-}
+import {
+  type UrlRewrite,
+  type CompiledUrlRewrite,
+  compileUrlRewrites,
+  applyUrlRewrites,
+  urlRewritesSchema,
+} from '../utils/urlRewrites'
+import { getLocalFileCandidates, resolveLocalFile } from '../utils/localPath'
 
 interface RuleOptions {
   urlRewrites: UrlRewrite[]
-  appendHtmlExtension: boolean
 }
 
 const defaults: RuleOptions = {
   urlRewrites: [],
-  appendHtmlExtension: false,
-}
-
-interface CompiledUrlRewrite {
-  regex: RegExp
-  replacement: string
 }
 
 export default class AlternateLanguageLinksRule extends Rule<void, RuleOptions> {
@@ -35,31 +31,15 @@ export default class AlternateLanguageLinksRule extends Rule<void, RuleOptions> 
 
   public constructor(options: Partial<RuleOptions>) {
     super({ ...defaults, ...options })
-    this.compiledUrlRewrites = this.compileUrlRewrites(this.options.urlRewrites)
+    this.compiledUrlRewrites = compileUrlRewrites(this.options.urlRewrites)
   }
 
   public static override schema(): SchemaObject {
     return {
       urlRewrites: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            pattern: {
-              type: 'string',
-            },
-            replacement: {
-              type: 'string',
-            },
-          },
-        },
+        ...urlRewritesSchema,
         description:
-          'Regex rewrite rules used to map alternate URLs to local file paths before reciprocal checks.',
-      },
-      appendHtmlExtension: {
-        type: 'boolean',
-        description:
-          'When true, local rewritten URLs without an extension will also be checked with a .html suffix.',
+          'Regex rewrite rules mapping alternate URLs to local file paths for reciprocal checks.',
       },
     }
   }
@@ -76,71 +56,25 @@ export default class AlternateLanguageLinksRule extends Rule<void, RuleOptions> 
     this.on('dom:ready', (event: DOMReadyEvent) => this.domReady(event))
   }
 
-  private compileUrlRewrites(rewrites: UrlRewrite[]): CompiledUrlRewrite[] {
-    return rewrites
-      .map(rewrite => {
-        try {
-          return {
-            regex: new RegExp(rewrite.pattern),
-            replacement: rewrite.replacement,
-          }
-        } catch {
-          return null
-        }
-      })
-      .filter((rewrite): rewrite is CompiledUrlRewrite => rewrite !== null)
-  }
-
-  private rewriteUrl(inputUrl: string): string {
-    let outputUrl = inputUrl
-    for (const rewrite of this.compiledUrlRewrites) {
-      outputUrl = outputUrl.replace(rewrite.regex, rewrite.replacement)
-    }
-    return outputUrl
-  }
-
   private loadLocalHtml(localPathRaw: string): string | null {
-    const candidatePaths: string[] = []
-
+    let resolved: string
     if (localPathRaw.startsWith('file://')) {
       try {
-        const parsed = new URL(localPathRaw)
-        candidatePaths.push(parsed.pathname)
+        resolved = new URL(localPathRaw).pathname
       } catch {
         return null
       }
     } else {
-      const resolved = path.isAbsolute(localPathRaw) ? localPathRaw : path.resolve(localPathRaw)
-      candidatePaths.push(resolved)
-      // For directory-style paths (trailing slash), also try index.html inside
-      if (localPathRaw.endsWith('/') || localPathRaw.endsWith(path.sep)) {
-        candidatePaths.push(path.join(resolved, 'index.html'))
-      }
+      resolved = path.isAbsolute(localPathRaw) ? localPathRaw : path.resolve(localPathRaw)
     }
-
-    if (this.options.appendHtmlExtension) {
-      for (const candidatePath of [...candidatePaths]) {
-        if (!path.extname(candidatePath)) {
-          candidatePaths.push(`${candidatePath}.html`)
-        }
-      }
-    }
-
-    for (const candidatePath of candidatePaths) {
-      if (!fs.existsSync(candidatePath)) {
-        continue
-      }
-      if (!fs.lstatSync(candidatePath).isFile()) {
-        continue
-      }
-      return fs.readFileSync(candidatePath, 'utf8')
-    }
-
-    return null
+    const candidates = getLocalFileCandidates(resolved, ['.html'], 'index.html')
+    const found = resolveLocalFile(candidates)
+    if (!found) return null
+    return fs.readFileSync(found, 'utf8')
   }
 
   private fetchHtml(url: string): string | null {
-    const rewrittenUrl = this.rewriteUrl(url)
+    const rewrittenUrl = applyUrlRewrites(url, this.compiledUrlRewrites)
 
     if (!/^https?:\/\//.test(rewrittenUrl)) {
       return this.loadLocalHtml(rewrittenUrl)

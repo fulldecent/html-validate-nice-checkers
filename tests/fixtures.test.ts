@@ -148,7 +148,6 @@ describe('fixture validation against required output', () => {
                   replacement: join(fixturesDir, 'rewrite-build'),
                 },
               ],
-              appendHtmlExtension: true,
             },
           ],
           // Disable caching for tests to ensure consistent results
@@ -158,10 +157,16 @@ describe('fixture validation against required output', () => {
               cacheExpiryFoundSeconds: 0,
               cacheExpiryNotFoundSeconds: 0,
               skipRegexes: [
-                'site\.invalid/url-is-skipped-by-regex-and-never-checked',
-                'dont-check-this\.invalid',
-                'https://x\.com/',
-                'https://www\.linkedin\.com/',
+                'site\\.invalid/url-is-skipped-by-regex-and-never-checked',
+                'dont-check-this\\.invalid',
+                'https://x\\.com/',
+                'https://www\\.linkedin\\.com/',
+              ],
+              urlRewrites: [
+                {
+                  pattern: '^https://example\\.invalid',
+                  replacement: join(fixturesDir, 'rewrite-build'),
+                },
               ],
               manuallyReviewedPath: join(fixturesDir, 'external-links-manually-reviewed.csv'),
               manuallyReviewedExpirySeconds: 365 * 24 * 60 * 60, // 1 year

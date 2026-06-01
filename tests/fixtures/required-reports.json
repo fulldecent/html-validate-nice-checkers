@@ -56,21 +56,11 @@
       "size": 4,
       "selector": "html > head > link:nth-child(5)",
       "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
-    },
-    {
-      "ruleId": "nice-checkers/internal-links",
-      "severity": 2,
-      "message": "Internal link to \"/en/alt-relative-to-en\" is broken.",
-      "offset": 387,
-      "line": 8,
-      "column": 71,
-      "size": 2,
-      "selector": "html > head > link:nth-child(5)",
-      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     }
   ],
   "tests/fixtures/AlternateLanguageLinksRule-reciprocal.html": [],
   "tests/fixtures/AlternateLanguageLinksRule-rewrite-local.html": [],
+  "tests/fixtures/AlternateLanguageLinksRule-rewrite-local-dir.html": [],
   "tests/fixtures/AlternateLanguageLinksRule-self-mismatch.html": [
     {
       "ruleId": "nice-checkers/alternate-language-links",
@@ -281,6 +271,20 @@
       "column": 34,
       "size": 1,
       "selector": "html > body > a:nth-child(5)",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
+    }
+  ],
+  "tests/fixtures/ExternalLinkRule-rewrite-url.html": [],
+  "tests/fixtures/ExternalLinkRule-rewrite-url-violation.html": [
+    {
+      "ruleId": "nice-checkers/external-links",
+      "severity": 2,
+      "message": "External link is broken (local rewrite not found): https://example.invalid/nonexistent-page",
+      "offset": 342,
+      "line": 11,
+      "column": 55,
+      "size": 1,
+      "selector": "html > body > a",
       "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
     }
   ],

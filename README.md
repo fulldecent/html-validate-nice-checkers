@@ -101,7 +101,7 @@ Also this rule enforces that your public URL does not end with a file extension 
   </html>
 ```
 
-### Configuration
+#### Configuration
 
 ```json
 {
@@ -111,7 +111,7 @@ Also this rule enforces that your public URL does not end with a file extension 
 }
 ```
 
-### Configuration options
+#### Configuration options
 
 This rule has no configurable options.
 
@@ -131,7 +131,7 @@ This allows you to validate your HTML before publishing, even when the canonical
 + <a href="https://example.com/nonexistent-page">This link works</a>
 ```
 
-### Configuration
+#### Configuration
 
 ```json
 {
@@ -152,19 +152,24 @@ This allows you to validate your HTML before publishing, even when the canonical
 }
 ```
 
-### Configuration options
+#### Configuration options
 
-| Option                          | Type       | Default                                                   | Description                                                |
-| ------------------------------- | ---------- | --------------------------------------------------------- | ---------------------------------------------------------- |
-| `proxyUrl`                      | `string`   | `""`                                                      | Proxy URL to use for HTTP requests                         |
-| `skipRegexes`                   | `string[]` | `[]`                                                      | Array of regex patterns for URLs to skip checking          |
-| `cacheExpiryFoundSeconds`       | `number`   | `2592000`                                                 | Cache duration for successful checks (default: 30 days)    |
-| `cacheExpiryNotFoundSeconds`    | `number`   | `259200`                                                  | Cache duration for failed checks (default: 3 days)         |
-| `timeoutSeconds`                | `number`   | `5`                                                       | Request timeout in seconds                                 |
-| `cacheDatabasePath`             | `string`   | `"cache/external-links.db"`                               | Path to the cache database file                            |
-| `userAgent`                     | `string`   | `"Mozilla/5.0 (compatible; html-validate-nice-checkers)"` | User agent string for HTTP requests                        |
-| `manuallyReviewedPath`          | `string`   | `""`                                                      | Path to CSV file with manually reviewed URLs (see below)   |
-| `manuallyReviewedExpirySeconds` | `number`   | `31536000`                                                | Expiry time for manually reviewed URLs (default: 365 days) |
+| Option                          | Type                                         | Default                                                   | Description                                                                                                                        |
+| ------------------------------- | -------------------------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `proxyUrl`                      | `string`                                     | `""`                                                      | Proxy URL to use for HTTP requests                                                                                                 |
+| `skipRegexes`                   | `string[]`                                   | `[]`                                                      | Array of regex patterns for URLs to skip checking                                                                                  |
+| `cacheExpiryFoundSeconds`       | `number`                                     | `2592000`                                                 | Cache duration for successful checks (default: 30 days)                                                                            |
+| `cacheExpiryNotFoundSeconds`    | `number`                                     | `259200`                                                  | Cache duration for failed checks (default: 3 days)                                                                                 |
+| `timeoutSeconds`                | `number`                                     | `5`                                                       | Request timeout in seconds                                                                                                         |
+| `cacheDatabasePath`             | `string`                                     | `"cache/external-links.db"`                               | Path to the cache database file                                                                                                    |
+| `userAgent`                     | `string`                                     | `"Mozilla/5.0 (compatible; html-validate-nice-checkers)"` | User agent string for HTTP requests                                                                                                |
+| `manuallyReviewedPath`          | `string`                                     | `""`                                                      | Path to CSV file with manually reviewed URLs (see below)                                                                           |
+| `manuallyReviewedExpirySeconds` | `number`                                     | `31536000`                                                | Expiry time for manually reviewed URLs (default: 365 days)                                                                         |
+| `urlRewrites`                   | `{ pattern: string, replacement: string }[]` | `[]`                                                      | Regex rewrite rules mapping absolute `https://` URLs to local paths. Matched URLs are checked on disk instead of over the network. |
+| `alternativeExtensions`         | `string[]`                                   | `[".html"]`                                               | Extensions to try when a rewritten local path has no extension.                                                                    |
+| `indexFile`                     | `string`                                     | `"index.html"`                                            | Filename to look for when a rewritten local path resolves to a directory.                                                          |
+
+When a URL is rewritten to a local path, the rule checks the path as-is, then with each `alternativeExtensions` suffix, then as a directory with `indexFile` — matching Eleventy's pretty-URL output format (e.g. `page.html` or `page/index.html`).
 
 #### Manually reviewed URLs
 
@@ -200,7 +205,7 @@ Reports insecure HTTP links that are accessible via HTTPS, encouraging the use o
 + <img src="https://cdn.example.com/image.webp" alt="Image" />
 ```
 
-### Configuration
+#### Configuration
 
 ```json
 {
@@ -218,7 +223,7 @@ Reports insecure HTTP links that are accessible via HTTPS, encouraging the use o
 }
 ```
 
-### Configuration options
+#### Configuration options
 
 | Option                       | Type     | Default                         | Description                                                   |
 | ---------------------------- | -------- | ------------------------------- | ------------------------------------------------------------- |
@@ -242,7 +247,7 @@ Validates that all internal links point to existing files in your project. This 
 + <a href="/logo.png">Correct case</a>
 ```
 
-### Configuration
+#### Configuration
 
 ```json
 {
@@ -259,7 +264,7 @@ Validates that all internal links point to existing files in your project. This 
 }
 ```
 
-### Configuration options
+#### Configuration options
 
 | Option                  | Type       | Default        | Description                                 |
 | ----------------------- | ---------- | -------------- | ------------------------------------------- |
@@ -282,7 +287,7 @@ Ensures that package assets loaded from CDNs (like jsDelivr) are using the lates
 + ></script>
 ```
 
-### Configuration
+#### Configuration
 
 ```json
 {
@@ -300,7 +305,7 @@ Ensures that package assets loaded from CDNs (like jsDelivr) are using the lates
 }
 ```
 
-### Configuration options
+#### Configuration options
 
 | Option               | Type       | Default                      | Description                                                 |
 | -------------------- | ---------- | ---------------------------- | ----------------------------------------------------------- |
@@ -335,7 +340,7 @@ For example, you might require a specific footer script on every page:
 }
 ```
 
-### Configuration
+#### Configuration
 
 ```json
 {
@@ -351,7 +356,7 @@ For example, you might require a specific footer script on every page:
 }
 ```
 
-### Configuration options
+#### Configuration options
 
 | Option         | Type                   | Default | Description                                  |
 | -------------- | ---------------------- | ------- | -------------------------------------------- |
@@ -367,7 +372,7 @@ Enforces that `mailto:` links contain specific parameters to improve user experi
 + <a href="mailto:contact@example.com?subject=Website%20Inquiry&body=Hello,%20I%20would%20like%20to...">Send email</a>
 ```
 
-### Configuration
+#### Configuration
 
 ```json
 {
@@ -382,7 +387,7 @@ Enforces that `mailto:` links contain specific parameters to improve user experi
 }
 ```
 
-### Configuration options
+#### Configuration options
 
 | Option               | Type       | Default | Description                                                                  |
 | -------------------- | ---------- | ------- | ---------------------------------------------------------------------------- |
@@ -397,7 +402,7 @@ If you are still using jQuery after 2022, please try to open your favorite chatb
 - <script src="../js/jquery.min.js"></script>
 ```
 
-### Configuration
+#### Configuration
 
 ```json
 {
@@ -407,7 +412,7 @@ If you are still using jQuery after 2022, please try to open your favorite chatb
 }
 ```
 
-### Configuration options
+#### Configuration options
 
 This rule has no configurable options.
 
@@ -447,12 +452,11 @@ Note that these sources we reference have a conflict. One says that you may use 
 - [Google: specify alternate language pages](https://developers.google.com/search/docs/specialty/international/localized-versions)
 - [W3C: link type 'alternate'](https://html.spec.whatwg.org/multipage/links.html#link-type-alternate)
 
-### Configuration options
+#### Configuration options
 
-| Option                | Type                                         | Default | Description                                                                                                |
-| --------------------- | -------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
-| `urlRewrites`         | `{ pattern: string, replacement: string }[]` | `[]`    | Regex rewrite rules applied to each alternate URL before reciprocal validation. Useful for local fixtures. |
-| `appendHtmlExtension` | `boolean`                                    | `false` | If true, local rewritten URLs without an extension are also checked with a `.html` suffix.                 |
+| Option        | Type                                         | Default | Description                                                                                                |
+| ------------- | -------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
+| `urlRewrites` | `{ pattern: string, replacement: string }[]` | `[]`    | Regex rewrite rules applied to each alternate URL before reciprocal validation. Useful for local fixtures. |
 
 ### Example configuration for local build validation
 
@@ -467,15 +471,14 @@ Note that these sources we reference have a conflict. One says that you may use 
             "pattern": "^https://example\\.invalid",
             "replacement": "./build"
           }
-        ],
-        "appendHtmlExtension": true
+        ]
       }
     ]
   }
 }
 ```
 
-With this configuration, an alternate URL like `https://example.invalid/some-page` is validated against `./build/some-page.html` without network access.
+With this configuration, an alternate URL like `https://example.invalid/some-page` is validated against `./build/some-page.html` or `./build/some-page/index.html` without network access.
 
 ## Disabled html-validate core rules
 

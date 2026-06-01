@@ -221,6 +221,16 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
       return
     }
 
+    // Alternate language links (rel="alternate" with hreflang) are validated by
+    // AlternateLanguageLinksRule; skip them here to avoid duplicate reports.
+    // Canonical links and other alternate variants (e.g. RSS feeds) are still
+    // checked for file existence.
+    if (tagName === 'link') {
+      const rel = target.getAttribute('rel')?.value
+      if (rel === 'alternate' && target.getAttribute('hreflang')?.value) {
+        return
+      }
+    }
     const rawUrl = target.getAttribute(urlAttribute)?.value
     if (typeof rawUrl !== 'string' || !rawUrl) {
       return
@@ -243,8 +253,7 @@ export default class InternalLinksRule extends Rule<void, RuleOptions> {
       return
     }
 
-    // Skip absolute URLs.
-    // An internal link does not have a protocol (http:, mailto:, etc.).
+    // Skip any absolute URL — internal links never have a scheme.
     if (/^[a-z][a-z0-9+.-]*:/i.test(url)) {
       return
     }

@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>External link rewrite — violation</title>
+    <link rel="canonical" href="https://example.invalid/en-main" />
+  </head>
+
+  <body>
+    <!-- This URL rewrites to a local path that does not exist on disk. -->
+    <a href="https://example.invalid/nonexistent-page">Nonexistent rewritten page</a>
+  </body>
+</html>

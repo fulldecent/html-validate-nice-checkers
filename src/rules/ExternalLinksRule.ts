@@ -9,6 +9,14 @@ import Database from 'better-sqlite3'
 import fs from 'node:fs'
 import path from 'node:path'
 import { syncHead } from '../utils/syncFetch'
+import {
+  type UrlRewrite,
+  type CompiledUrlRewrite,
+  compileUrlRewrites,
+  applyUrlRewrites,
+  urlRewritesSchema,
+} from '../utils/urlRewrites'
+import { getLocalFileCandidates, resolveLocalFile } from '../utils/localPath'
 
 interface UrlCacheRow {
   url: string
@@ -32,6 +40,9 @@ interface RuleOptions {
   userAgent: string
   manuallyReviewedPath: string
   manuallyReviewedExpirySeconds: number
+  urlRewrites: UrlRewrite[]
+  alternativeExtensions: string[]
+  indexFile: string
 }
 
 const defaults: RuleOptions = {
@@ -45,6 +56,9 @@ const defaults: RuleOptions = {
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.9999.999 Safari/537.36',
   manuallyReviewedPath: '',
   manuallyReviewedExpirySeconds: 365 * 24 * 60 * 60, // Default: 365 days (1 year)
+  urlRewrites: [],
+  alternativeExtensions: ['.html'],
+  indexFile: 'index.html',
 }
 
 function normalizeUrl(url: string): string {
@@ -60,6 +74,7 @@ function normalizeUrl(url: string): string {
 export default class ExternalLinksRule extends Rule<void, RuleOptions> {
   private readonly skipRegexesCompiled: RegExp[]
   private readonly manuallyReviewedUrls: Map<string, number>
+  private readonly compiledUrlRewrites: CompiledUrlRewrite[]
   private db!: Database.Database
 
   public constructor(options: Partial<RuleOptions>) {
@@ -67,6 +82,7 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
     super({ ...defaults, ...options })
     this.skipRegexesCompiled = this.compileRegexes(this.options.skipRegexes)
     this.manuallyReviewedUrls = this.loadManuallyReviewedUrls()
+    this.compiledUrlRewrites = compileUrlRewrites(this.options.urlRewrites ?? [])
   }
 
   public static override schema(): SchemaObject {
@@ -110,6 +126,22 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
         type: 'number',
         description:
           'Number of seconds before a manually reviewed URL approval expires (default: 365 days).',
+      },
+      urlRewrites: {
+        ...urlRewritesSchema,
+        description:
+          'Regex rewrite rules mapping absolute https:// URLs to local paths. If a rewrite produces a local path, the file is checked on disk instead of over the network.',
+      },
+      alternativeExtensions: {
+        type: 'array',
+        items: { type: 'string' },
+        description:
+          'Extensions to try when a rewritten local path has no extension (e.g. [".html"]).',
+      },
+      indexFile: {
+        type: 'string',
+        description:
+          'Filename to look for when a rewritten local path resolves to a directory (e.g. "index.html").',
       },
     }
   }
@@ -292,6 +324,25 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
     }
 
     if (this.skipRegexesCompiled.some(regex => regex.test(url))) {
+      return
+    }
+
+    // If a rewrite rule maps this URL to a local path, check the file on disk.
+    const rewritten = applyUrlRewrites(url, this.compiledUrlRewrites)
+    if (!/^https?:\/\//i.test(rewritten)) {
+      const resolved = path.isAbsolute(rewritten) ? rewritten : path.resolve(rewritten)
+      const candidates = getLocalFileCandidates(
+        resolved,
+        this.options.alternativeExtensions,
+        this.options.indexFile
+      )
+      const found = resolveLocalFile(candidates)
+      if (!found) {
+        this.report({
+          node: target,
+          message: `External link is broken (local rewrite not found): ${url}`,
+        })
+      }
       return
     }
 
