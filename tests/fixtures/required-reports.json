@@ -181,8 +181,8 @@
     {
       "ruleId": "nice-checkers/external-links",
       "severity": 2,
-      "message": "External link is broken with status 404: http://localhost:9876/status/200/page-that-is-404-that-happens-to-have-status-200-prefix",
-      "offset": 879,
+      "message": "External link is broken with status 404: http://localhost:9876/unregistered-page-returns-404",
+      "offset": 842,
       "line": 25,
       "column": 7,
       "size": 1,

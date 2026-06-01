@@ -1,17 +1,67 @@
 import {
   Rule,
   type RuleDocumentation,
-  type TagReadyEvent,
   type DOMReadyEvent,
   type HtmlElement,
   type SchemaObject,
 } from 'html-validate'
 import { syncFetch } from '../utils/syncFetch'
 import * as cheerio from 'cheerio'
+import fs from 'node:fs'
+import path from 'node:path'
 
-export default class AlternateLanguageLinksRule extends Rule<void, void> {
+interface UrlRewrite {
+  pattern: string
+  replacement: string
+}
+
+interface RuleOptions {
+  urlRewrites: UrlRewrite[]
+  appendHtmlExtension: boolean
+}
+
+const defaults: RuleOptions = {
+  urlRewrites: [],
+  appendHtmlExtension: false,
+}
+
+interface CompiledUrlRewrite {
+  regex: RegExp
+  replacement: string
+}
+
+export default class AlternateLanguageLinksRule extends Rule<void, RuleOptions> {
+  private readonly compiledUrlRewrites: CompiledUrlRewrite[]
+
+  public constructor(options: Partial<RuleOptions>) {
+    super({ ...defaults, ...options })
+    this.compiledUrlRewrites = this.compileUrlRewrites(this.options.urlRewrites)
+  }
+
   public static override schema(): SchemaObject {
-    return {}
+    return {
+      urlRewrites: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            pattern: {
+              type: 'string',
+            },
+            replacement: {
+              type: 'string',
+            },
+          },
+        },
+        description:
+          'Regex rewrite rules used to map alternate URLs to local file paths before reciprocal checks.',
+      },
+      appendHtmlExtension: {
+        type: 'boolean',
+        description:
+          'When true, local rewritten URLs without an extension will also be checked with a .html suffix.',
+      },
+    }
   }
 
   public override documentation(): RuleDocumentation {
@@ -24,6 +74,83 @@ export default class AlternateLanguageLinksRule extends Rule<void, void> {
 
   public override setup(): void {
     this.on('dom:ready', (event: DOMReadyEvent) => this.domReady(event))
+  }
+
+  private compileUrlRewrites(rewrites: UrlRewrite[]): CompiledUrlRewrite[] {
+    return rewrites
+      .map(rewrite => {
+        try {
+          return {
+            regex: new RegExp(rewrite.pattern),
+            replacement: rewrite.replacement,
+          }
+        } catch {
+          return null
+        }
+      })
+      .filter((rewrite): rewrite is CompiledUrlRewrite => rewrite !== null)
+  }
+
+  private rewriteUrl(inputUrl: string): string {
+    let outputUrl = inputUrl
+    for (const rewrite of this.compiledUrlRewrites) {
+      outputUrl = outputUrl.replace(rewrite.regex, rewrite.replacement)
+    }
+    return outputUrl
+  }
+
+  private loadLocalHtml(localPathRaw: string): string | null {
+    const candidatePaths: string[] = []
+
+    if (localPathRaw.startsWith('file://')) {
+      try {
+        const parsed = new URL(localPathRaw)
+        candidatePaths.push(parsed.pathname)
+      } catch {
+        return null
+      }
+    } else {
+      const resolved = path.isAbsolute(localPathRaw) ? localPathRaw : path.resolve(localPathRaw)
+      candidatePaths.push(resolved)
+      // For directory-style paths (trailing slash), also try index.html inside
+      if (localPathRaw.endsWith('/') || localPathRaw.endsWith(path.sep)) {
+        candidatePaths.push(path.join(resolved, 'index.html'))
+      }
+    }
+
+    if (this.options.appendHtmlExtension) {
+      for (const candidatePath of [...candidatePaths]) {
+        if (!path.extname(candidatePath)) {
+          candidatePaths.push(`${candidatePath}.html`)
+        }
+      }
+    }
+
+    for (const candidatePath of candidatePaths) {
+      if (!fs.existsSync(candidatePath)) {
+        continue
+      }
+      if (!fs.lstatSync(candidatePath).isFile()) {
+        continue
+      }
+      return fs.readFileSync(candidatePath, 'utf8')
+    }
+
+    return null
+  }
+
+  private fetchHtml(url: string): string | null {
+    const rewrittenUrl = this.rewriteUrl(url)
+
+    if (!/^https?:\/\//.test(rewrittenUrl)) {
+      return this.loadLocalHtml(rewrittenUrl)
+    }
+
+    const result = syncFetch(rewrittenUrl, { timeoutSeconds: 10, maxRedirs: 5 })
+    if (!result.success || !result.body) {
+      return null
+    }
+    return result.body
   }
 
   private domReady(event: DOMReadyEvent): void {
@@ -85,8 +212,8 @@ export default class AlternateLanguageLinksRule extends Rule<void, void> {
       const href: string | undefined = typeof hrefAttr2 === 'string' ? hrefAttr2 : undefined
       if (!href || href === canonicalUrl) continue
 
-      const result = syncFetch(href, { timeoutSeconds: 10, maxRedirs: 5 })
-      if (!result.success || !result.body) {
+      const remoteHtml = this.fetchHtml(href)
+      if (!remoteHtml) {
         this.report({
           node: alt,
           message: `Alternate page ${href} is not accessible`,
@@ -100,7 +227,7 @@ export default class AlternateLanguageLinksRule extends Rule<void, void> {
       const expectedHreflang = pageLang ?? ''
 
       // Parse the remote HTML for alternate links using cheerio
-      const $ = cheerio.load(result.body)
+      const $ = cheerio.load(remoteHtml)
       const remoteAlternates = $('link[rel="alternate"][hreflang]')
 
       let foundReciprocal = false

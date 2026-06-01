@@ -447,6 +447,36 @@ Note that these sources we reference have a conflict. One says that you may use 
 - [Google: specify alternate language pages](https://developers.google.com/search/docs/specialty/international/localized-versions)
 - [W3C: link type 'alternate'](https://html.spec.whatwg.org/multipage/links.html#link-type-alternate)
 
+### Configuration options
+
+| Option                  | Type                                                    | Default | Description                                                                                                  |
+| ----------------------- | ------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
+| `urlRewrites`           | `{ pattern: string, replacement: string }[]`           | `[]`    | Regex rewrite rules applied to each alternate URL before reciprocal validation. Useful for local fixtures. |
+| `appendHtmlExtension`   | `boolean`                                               | `false` | If true, local rewritten URLs without an extension are also checked with a `.html` suffix.                |
+
+### Example configuration for local build validation
+
+```json
+{
+  "rules": {
+    "nice-checkers/alternate-language-links": [
+      "error",
+      {
+        "urlRewrites": [
+          {
+            "pattern": "^https://example\\.invalid",
+            "replacement": "./build"
+          }
+        ],
+        "appendHtmlExtension": true
+      }
+    ]
+  }
+}
+```
+
+With this configuration, an alternate URL like `https://example.invalid/some-page` is validated against `./build/some-page.html` without network access.
+
 ## Disabled html-validate core rules
 
 `nice-checkers-plugin:recommended` explicitly turns off the following built-in html-validate rules because they conflict with common HTML minification tools.

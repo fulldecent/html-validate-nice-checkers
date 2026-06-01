@@ -83,6 +83,9 @@ function getFixtureFiles(dir: string = fixturesDir): string[] {
   try {
     readdirSync(dir, { withFileTypes: true }).forEach(file => {
       const fullPath = join(dir, file.name)
+      if (file.isDirectory() && file.name === 'rewrite-build') {
+        return
+      }
       results.push(
         ...(file.isDirectory()
           ? getFixtureFiles(fullPath)
@@ -136,6 +139,18 @@ describe('fixture validation against required output', () => {
         plugins: [plugin],
         extends: ['nice-checkers-plugin:recommended'],
         rules: {
+          'nice-checkers/alternate-language-links': [
+            'error',
+            {
+              urlRewrites: [
+                {
+                  pattern: '^https://example\\.invalid',
+                  replacement: join(fixturesDir, 'rewrite-build'),
+                },
+              ],
+              appendHtmlExtension: true,
+            },
+          ],
           // Disable caching for tests to ensure consistent results
           'nice-checkers/external-links': [
             'error',

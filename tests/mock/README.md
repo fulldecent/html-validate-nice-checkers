@@ -10,7 +10,7 @@ The mock HTTP server shall supports the following routes and behaviors for testi
   - `http://localhost:9876/status/400` → 400, empty body ok
   - `http://localhost:9876/status/500` → 500, empty body ok
   - `http://localhost:9876/redirect-to?url=http%3A%2F%2Flocalhost%3A9876%2Fstatus%2F200&status_code=301` → 301 then 200 final
-  - `http://localhost:9876/status/200/page-that-is-404-that-happens-to-have-status-200-prefix` → 404 (not tapped)
+  - `http://localhost:9876/unregistered-page-returns-404` → 404 (not tapped)
 
 - custom taps (must return html bodies)
   - `http://localhost:9876/fr/alt-to-fr` → 200; no reciprocal link back to en
@@ -31,7 +31,7 @@ The mock HTTP server shall supports the following routes and behaviors for testi
   - `http://localhost:9876/status/400` → 400
   - `http://localhost:9876/status/500` → 500
   - `http://localhost:9876/redirect-to?url=http%3A%2F%2Flocalhost%3A9876%2Fstatus%2F200&status_code=301` → 301 redirect then 200 final
-  - `http://localhost:9876/status/200/page-that-is-404-that-happens-to-have-status-200-prefix` → 404 (not tapped)
+  - `http://localhost:9876/unregistered-page-returns-404` → 404 (not tapped)
 
 - https links rule
   - `http://localhost:9876/status/200` → 200; no https upgrade available (mock has no tls)

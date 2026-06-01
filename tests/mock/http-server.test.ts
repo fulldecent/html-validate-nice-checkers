@@ -69,10 +69,8 @@ describe('mock server validation against PLAN.md', () => {
       expect(status).toBe(500)
     })
 
-    it('GET /status/200/page-that-is-404-that-happens-to-have-status-200-prefix returns 404', async () => {
-      const { status } = await fetchWithStatus(
-        '/status/200/page-that-is-404-that-happens-to-have-status-200-prefix'
-      )
+    it('GET /unregistered-page-returns-404 returns 404', async () => {
+      const { status } = await fetchWithStatus('/unregistered-page-returns-404')
       expect(status).toBe(404)
     })
 
