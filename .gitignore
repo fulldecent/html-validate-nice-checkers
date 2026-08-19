@@ -17,3 +17,4 @@
 !.yarn/releases
 #!.yarn/sdks # 2025-09-23 @fulldecent: Yarn project should not recommend this
 !.yarn/versions
+package-lock.json
