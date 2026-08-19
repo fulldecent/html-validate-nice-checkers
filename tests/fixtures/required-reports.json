@@ -144,6 +144,7 @@
       "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
     }
   ],
+  "tests/fixtures/CanonicalLinkRule-root-tld.html": [],
   "tests/fixtures/CanonicalLinkRule-violation.html": [
     {
       "ruleId": "nice-checkers/canonical-link",

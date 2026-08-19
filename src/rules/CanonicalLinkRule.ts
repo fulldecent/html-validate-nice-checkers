@@ -44,7 +44,15 @@ export default class CanonicalLinkRule extends Rule {
     }
 
     // Check for file extensions like .html, .php, etc.
-    if (/\.\w+$/.test(href)) {
+    // Test only the pathname so that multi-character TLDs (.app, .io, .dev) are not flagged.
+    // Fall back to testing the full href for relative or non-parseable URLs.
+    let pathname: string
+    try {
+      pathname = new URL(href).pathname
+    } catch {
+      pathname = href
+    }
+    if (/\.\w+$/.test(pathname)) {
       this.report({
         node: linkCanonical,
         message: 'Canonical link href should be extensionless (no .html, .php, etc.)',
