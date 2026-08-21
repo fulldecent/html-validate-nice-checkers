@@ -458,6 +458,36 @@ Note that these sources we reference have a conflict. One says that you may use 
 | ------------- | -------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
 | `urlRewrites` | `{ pattern: string, replacement: string }[]` | `[]`    | Regex rewrite rules applied to each alternate URL before reciprocal validation. Useful for local fixtures. |
 
+### `nice-checkers/schema-org-json-ld`
+
+Validates `<script type="application/ld+json">` structured data against the bundled Schema.org vocabulary. This rule catches typos and mistakes in class names, property names, and property values before search engines silently ignore your structured data.
+
+```diff
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+-   "@type": "MyTotallyFakeClass",
++   "@type": "WebSite",
+    "name": "My Awesome Site",
+    "url": "https://example.com/"
+  }
+  </script>
+```
+
+#### Configuration
+
+```json
+{
+  "rules": {
+    "nice-checkers/schema-org-json-ld": "error"
+  }
+}
+```
+
+#### Configuration options
+
+This rule has no configurable options.
+
 ### Example configuration for local build validation
 
 ```json
