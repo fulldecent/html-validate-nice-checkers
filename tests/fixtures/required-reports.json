@@ -144,6 +144,19 @@
       "ruleUrl": "https://developers.google.com/search/docs/specialty/international/localized-versions"
     }
   ],
+  "tests/fixtures/CanonicalLinkRule-extension-violation.html": [
+    {
+      "ruleId": "nice-checkers/canonical-link",
+      "severity": 2,
+      "message": "Canonical link href should be extensionless (no .html, .php, etc.)",
+      "offset": 130,
+      "line": 6,
+      "column": 6,
+      "size": 4,
+      "selector": "html > head > link",
+      "ruleUrl": "https://github.com/fulldecent/html-validate-nice-checkers/blob/main/README.md#rules"
+    }
+  ],
   "tests/fixtures/CanonicalLinkRule-root-tld.html": [],
   "tests/fixtures/CanonicalLinkRule-violation.html": [
     {
