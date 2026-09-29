@@ -1,32 +1,36 @@
-# :cherry_blossom: Nice Checkers
+# Nice Checkers
 
-[![CI](https://github.com/fulldecent/html-validate-nice-checkers/actions/workflows/ci.yml/badge.svg)](https://github.com/fulldecent/html-validate-nice-checkers/actions/workflows/ci.yml)
+[![Lint](https://github.com/fulldecent/html-validate-nice-checkers/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/fulldecent/html-validate-nice-checkers/actions/workflows/lint.yml)
+[![Test](https://github.com/fulldecent/html-validate-nice-checkers/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/fulldecent/html-validate-nice-checkers/actions/workflows/test.yml)
 
-An opinionated collection of essential HTML validation rules that promote best practices™ for web development. Use this plugin with [HTML-validate](https://html-validate.org/).
+## What this project does
 
-## Features
+Nice Checkers is an [HTML-validate](https://html-validate.org/) plugin with 11 rules for SEO, security, accessibility, and URLs.
 
-- :white_check_mark: **Turnkey validation**: 11 rules covering SEO, security, accessibility, and best practices
-- :white_check_mark: **TypeScript**: full type definitions included
-- :white_check_mark: **Dual module support**: works with both ESM (`import`) and CJS (`require`)
-- :white_check_mark: **Tree shakeable**: import only what you need
-- :white_check_mark: **Modern tooling**: [built with tsup](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/tsup.config.ts), [tested with Vitest](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/vitest.config.ts), [good IDE hinting](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/tsconfig.json) and [enforced style checking](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/.prettierrc)
-- :white_check_mark: **Comprehensive testing**: high test coverage with realistic fixtures
+The npm package is [@fulldecent/nice-checkers-plugin](https://www.npmjs.com/package/@fulldecent/nice-checkers-plugin). It publishes ESM and CommonJS builds and TypeScript types. It runs in Node.js while a site is built. Some rules call other sites with `curl`. A `fetch()` implementation is blocked by [html-validate issue 317](https://gitlab.com/html-validate/html-validate/-/issues/317).
+
+`engines` allows Node.js 22 and newer. [Tests](.github/workflows/test.yml) run on the Node.js 22, 24, and 26 release lines. [Lint](.github/workflows/lint.yml) checks Prettier and markdownlint. Local development uses the Node.js version in [.node-version](.node-version).
+
+[GitHub Pages template](https://github.com/fulldecent/github-pages-template) is a site that uses this plugin, with Actions and Pages deployment.
 
 ## Installation
 
-These instructions assume you will use Nice Checkers as part of a web test suite running Node (20+) and [HTML-validate](https://html-validate.org/). See [GitHub Pages Template](https://github.com/fulldecent/github-pages-template) for an end-to-end example, including GitHub Actions continuous integration, testing and GitHub Pages deployment for all modern best practices.
+These instructions assume Nice Checkers is part of a web test suite running Node.js 22 or newer and [HTML-validate](https://html-validate.org/).
 
-### Add package dev dependency
+### Add the package
 
-_Nice Checkers is a **dev** dependency for you because you need it to test your website, not to deploy it._
+Install Nice Checkers as a dev dependency. It is used to test the site.
+
+Yarn:
 
 ```sh
-# Using Yarn
-yarn add -D html-validate-nice-checkers
+yarn add -D @fulldecent/nice-checkers-plugin
+```
 
-# Using npm
-npm install --dev html-validate-nice-checkers
+npm:
+
+```sh
+npm install -D @fulldecent/nice-checkers-plugin
 ```
 
 ### Update your HTML-validate configuration
@@ -547,36 +551,30 @@ See [issue #23](https://github.com/fulldecent/html-validate-nice-checkers/issues
 
 ## Development
 
-Thank you for contributing improvements to this project!
-
-### Install
+Clone the repo:
 
 ```sh
-# Clone the repository
-git clone https://github.com/yourusername/html-validate-nice-checkers.git
-cd html-validate-nice-checkers
+git clone https://github.com/fulldecent/html-validate-nice-checkers.git ~/Developer/html-validate-nice-checkers
+cd ~/Developer/html-validate-nice-checkers
+```
 
-# Setup Node, for example using nvm
-nvm use
+Use Node and yarn. The Node version is pinned in [.node-version](.node-version), and the Yarn version is pinned in [package.json](package.json). Quick start with [fnm](https://github.com/Schniz/fnm):
 
-# Enable Yarn Berry
+```sh
+fnm install
+fnm use
 corepack enable
-
-# Install dependencies
 yarn install
+yarn test
 ```
 
-### Hint: VS Code setup for Yarn Berry
-
-These notes are [from the Yarn project](https://yarnpkg.com/getting-started/editor-sdks#).
+Format files the lint workflow checks:
 
 ```sh
-yarn dlx @yarnpkg/sdks vscode
+yarn format
 ```
 
-and YES, use workspace TypeScript version.
-
-### [Development scripts](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/package.json)
+[Development scripts](package.json):
 
 - `yarn build` builds the package
 - `yarn build:watch` builds the package in watch mode
@@ -584,34 +582,57 @@ and YES, use workspace TypeScript version.
 - `yarn test:watch` runs the tests in watch mode
 - `yarn test:coverage` runs the tests and generates a coverage report
 - `yarn lint` runs TypeScript type checking
-- `yarn format` formats all source files with Prettier
+- `yarn format` formats files with Prettier and markdownlint
+
+Changes are ready to push when `yarn format && yarn lint && yarn test` passes.
+
+### Editor setup for Yarn
+
+Yarn installs with Plug'n'Play. An editor that loads TypeScript from a global install will not see this project's version. [Yarn's editor SDK instructions](https://yarnpkg.com/getting-started/editor-sdks) are:
+
+```sh
+yarn dlx @yarnpkg/sdks vscode
+```
+
+Then select the workspace TypeScript version.
+
+`yarn format` and the lint workflow both run `npx prettier@latest`. The editor's Prettier extension can be a different version, so the command above is the one that matches CI.
 
 ### Testing notes
 
 When running `yarn test` to test Nice Checkers itself, you may see two warnings about missing "root" paths. These come from the mock HTTP server (`@jaredwray/mockhttp`) which is only used in our test suite. The warnings are harmless and do not affect test results. We consider this an error in the upstream mock HTTP server package. These warnings do not appear for downstream users who install Nice Checkers to validate their own websites.
 
-## Release to [npm registry](https://www.npmjs.com/package/@fulldecent/nice-checkers-plugin)
+## Releasing
 
-1. Add any features that will be in the release.
-2. Bump yarn version if appropriate (`yarn set version latest`).
-3. Bump yarn dependencies if appropriate (`yarn upgrade-interactive`).
-4. Bump package.json `peerDependencies` if new `html-validate` is available.
-5. Bump GitHub Actions `uses:` versions if appropriate.
-6. Ensure `yarn && yarn format && yarn lint && yarn build && yarn test && echo ✅` all pass.
-7. Ensure CI passes.
-8. Bump package.json version. (Use a separate commit by itself for this.)
-9. Use GitHub website to create a tag and a release.
+Package versions use [Semantic Versioning](https://semver.org/).
 
-This releases triggers the [the npm publish workflow](https://github.com/fulldecent/html-validate-nice-checkers/blob/main/.github/workflows/publish.yml).
+1. Finish the changes that belong in the release.
+1. Bump `peerDependencies` when a newly supported html-validate version requires it.
+1. Run `yarn && yarn format && yarn lint && yarn build && yarn test`.
+1. Bump `version` in package.json in a commit by itself.
+1. Create a GitHub release for that version. [publish.yml](.github/workflows/publish.yml) publishes the package to npm.
 
-## Maintenance
+## Maintenance and dependency updates
 
-Periodically, load schemaorg-current-https.jsonld file from <https://schema.org/docs/developers.html> and save to src/vendor/schemaorg-current-https.jsonld. Ideally, the sponsors of Schema.org: Google, Inc., Yahoo, Inc., Microsoft Corporation and Yandex should maintain a NPM package for this file that we can depend on. This would allow our package manager to handle updates.
+Do this every month or so and please send a PR here if you see updates available:
 
-## Browser support
+1. Identify external Actions in [.github/workflows](./.github/workflows) scripts and look for available new versions. Review and then update to the new version if it is safe. GitHub-supported Actions (i.e. under the actions/ organization) may require only cursory review.
+1. Review the Node.js version in `.node-version`. Update it when a newer version is appropriate. `fnm install` reads that file. Also review the Node.js versions in [test.yml](.github/workflows/test.yml). Those versions are the maintenance, active, and current release lines allowed by `engines`, which is separate from the local pin.
+1. Review the Yarn version in `package.json` (`packageManager`). Update it with `yarn set version stable && yarn` when a newer stable version is appropriate. [Yarn's install instructions](https://yarnpkg.com/getting-started/install) document that command.
+1. Review direct dependencies with `yarn upgrade-interactive`.
+1. Download the Schema.org vocabulary from <https://schema.org/docs/developers.html> and save it as `src/vendor/schemaorg-current-https.json`. Schema.org does not publish that file as an npm package, so the update is manual.
 
-This is a Node.js library designed for build-time HTML validation. For browser usage, ensure your bundler supports the module format you're using. Some of our rules use `cURL` which will not work in the browser. We would like to switch to `fetch()` but [are limited by](https://gitlab.com/html-validate/html-validate/-/issues/317) HTML-validate.
+## References
 
-## Contributing
-
-Ensure your changes pass `yarn format && yarn lint && yarn test`.
+1. We use title case for titles and proper nouns; not for headings and things. This includes our README above as well as our workflow rules and other configuration files. If you have a different policy, then please implement it throughout.
+1. This project uses the MIT license, the same license as [node.js-template](https://github.com/fulldecent/node.js-template).
+1. We would prefer if fnm supported build attestations since it is installed as a binary ([issue #1588](https://github.com/Schniz/fnm/issues/1588)).
+1. Node.js ignore rules are inlined from [Node.gitignore](https://github.com/github/gitignore/blob/main/Node.gitignore). This project also ignores `/cache`, the fixture files that tests rewrite, and `package-lock.json`. `package-lock.json` is ignored because dependencies are locked with `yarn.lock`.
+1. `.yarnrc.yml` sets `enableScripts` to true (Yarn 4.14 defaults to false) and `npmMinimalAgeGate` to 0 (Yarn 4.12 defaults to one day). `approvedGitRepositories` is `"**"`, which approves every git dependency. [Yarn: Security](https://yarnpkg.com/features/security)
+1. Prettier options are in [.prettierrc](.prettierrc). [node.js-template](https://github.com/fulldecent/node.js-template) has no application source and therefore no Prettier config. Formatting still uses `npx prettier@latest`, the same command as that template's lint workflow.
+1. `.prettierignore` ignores `*.md`, the same as the template. It also ignores `tests/fixtures` and `src/vendor`. Fixture HTML is the exact input for `required-reports.json`, which records line, column, and byte offset. `src/vendor/schemaorg-current-https.json` is a file downloaded from Schema.org.
+1. markdownlint disables MD013, the same as the template, and sets MD024 `siblings_only`. Each rule section repeats the headings "Configuration" and "Configuration options". `siblings_only` allows that because each heading sits under a different rule.
+1. [test.yml](.github/workflows/test.yml) runs `yarn lint`, `yarn test`, and `yarn build`, then packs the package and imports it from ESM and from CommonJS. The test script in node.js-template is `true`, which is enough for a package with no behavior of its own. This job also runs on Node.js 22, 24, and 26 because `engines` is `>=22` and those are the maintenance, active, and current release lines. `.node-version` stays at 24.
+1. [publish.yml](.github/workflows/publish.yml) publishes to npm when a GitHub release is published. node.js-template sets `"private": true` and is not an npm package.
+1. This project is built based on [best practices documented in node.js-template](https://github.com/fulldecent/node.js-template).
+1. This project is built based on [best practices documented in project-template](https://github.com/fulldecent/project-template), release 1.0.0.

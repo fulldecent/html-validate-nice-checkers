@@ -137,8 +137,7 @@ export default class HttpsLinksRule extends Rule<void, RuleOptions> {
     const url = rawUrl.replace(/&amp;/g, '&')
 
     const row = this.db.prepare('SELECT found FROM urls WHERE url = ?').get(url) as
-      | Pick<HttpsCacheRow, 'found'>
-      | undefined
+      Pick<HttpsCacheRow, 'found'> | undefined
 
     if (row) {
       if (row.found === 1) {

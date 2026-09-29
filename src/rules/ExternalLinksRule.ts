@@ -355,8 +355,7 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
 
     const normalizedUrl = normalizeUrl(url)
     const row = this.db.prepare('SELECT * FROM urls WHERE url = ?').get(normalizedUrl) as
-      | UrlCacheRow
-      | undefined
+      UrlCacheRow | undefined
 
     if (row) {
       if (row.status >= 200 && row.status < 300) {

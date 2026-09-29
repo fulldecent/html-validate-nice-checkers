@@ -182,8 +182,7 @@ export default class LatestPackagesRule extends Rule<void, RuleOptions> {
     }
 
     const row = this.db.prepare('SELECT current FROM latest_packages WHERE url = ?').get(url) as
-      | Pick<PackageCacheRow, 'current'>
-      | undefined
+      Pick<PackageCacheRow, 'current'> | undefined
 
     if (row) {
       if (row.current === 0) {
