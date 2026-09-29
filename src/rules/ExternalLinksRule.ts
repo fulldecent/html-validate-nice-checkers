@@ -5,9 +5,9 @@ import {
   type SchemaObject,
   Rule,
 } from 'html-validate'
-import Database from 'better-sqlite3'
 import fs from 'node:fs'
 import path from 'node:path'
+import { CsvDatabase, parseCsv } from '../utils/csvDatabase'
 import { syncHead } from '../utils/syncFetch'
 import {
   type UrlRewrite,
@@ -17,18 +17,6 @@ import {
   urlRewritesSchema,
 } from '../utils/urlRewrites'
 import { getLocalFileCandidates, resolveLocalFile } from '../utils/localPath'
-
-interface UrlCacheRow {
-  url: string
-  status: number
-  redirect_to: string | null
-  time: number
-}
-
-interface ManuallyReviewedUrl {
-  url: string
-  lastApprovedTime: number
-}
 
 interface RuleOptions {
   proxyUrl: string
@@ -51,7 +39,7 @@ const defaults: RuleOptions = {
   cacheExpiryFoundSeconds: 30 * 24 * 60 * 60, // Default: 30 days
   cacheExpiryNotFoundSeconds: 3 * 24 * 60 * 60, // Default: 3 days
   timeoutSeconds: 5,
-  cacheDatabasePath: 'cache/external-links.db',
+  cacheDatabasePath: 'cache/external-links.csv',
   userAgent:
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.9999.999 Safari/537.36',
   manuallyReviewedPath: '',
@@ -75,7 +63,7 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
   private readonly skipRegexesCompiled: RegExp[]
   private readonly manuallyReviewedUrls: Map<string, number>
   private readonly compiledUrlRewrites: CompiledUrlRewrite[]
-  private db!: Database.Database
+  private db!: CsvDatabase
 
   public constructor(options: Partial<RuleOptions>) {
     /* assign default values if not provided by user */
@@ -112,7 +100,7 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
       },
       cacheDatabasePath: {
         type: 'string',
-        description: 'File path for the SQLite cache database.',
+        description: 'File path for the CSV cache database.',
       },
       userAgent: {
         type: 'string',
@@ -154,27 +142,20 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
   }
 
   public override setup(): void {
-    this.db = this.setupDatabase()
+    this.db = CsvDatabase.open(
+      this.options.cacheDatabasePath,
+      ['url', 'status', 'redirect_to', 'time'],
+      row => {
+        const status = Number(row.status)
+        const expirySeconds =
+          status >= 200 && status < 300
+            ? this.options.cacheExpiryFoundSeconds
+            : this.options.cacheExpiryNotFoundSeconds
+        return !(Number(row.time) >= Math.floor(Date.now() / 1000) - expirySeconds)
+      }
+    )
     this.on('tag:ready', (event: TagReadyEvent) => this.tagReady(event))
-  }
-
-  private setupDatabase(): Database.Database {
-    const dir = path.dirname(this.options.cacheDatabasePath)
-    fs.mkdirSync(dir, { recursive: true })
-
-    const db = new Database(this.options.cacheDatabasePath)
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS urls (url TEXT UNIQUE NOT NULL, status INTEGER, redirect_to TEXT, time INTEGER);
-      CREATE INDEX IF NOT EXISTS time_idx ON urls (time);
-    `)
-
-    db.exec(
-      `DELETE FROM urls WHERE status >= 200 AND status < 300 AND time < unixepoch() - ${this.options.cacheExpiryFoundSeconds}`
-    )
-    db.exec(
-      `DELETE FROM urls WHERE (status < 200 OR status >= 300) AND time < unixepoch() - ${this.options.cacheExpiryNotFoundSeconds}`
-    )
-    return db
+    this.on('dom:ready', () => this.db.close())
   }
 
   private compileRegexes(patterns: string[]): RegExp[] {
@@ -205,26 +186,11 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
       }
 
       const csvContent = fs.readFileSync(this.options.manuallyReviewedPath, 'utf-8')
-      const lines = csvContent.split('\n')
 
-      for (let i = 1; i < lines.length; i++) {
-        // Skip header and empty lines
-        const line = lines[i]
-        if (!line) continue
-        const trimmedLine = line.trim()
-        if (!trimmedLine) continue
-
-        // Simple CSV parsing: split by comma and handle quoted fields
-        const parts = trimmedLine.split(',')
-        if (parts.length < 2) continue
-
-        const urlPart = parts[0]
-        const timestampPart = parts[1]
-        if (!urlPart || !timestampPart) continue
-
-        const url = urlPart.replace(/^"|"$/g, '').trim()
-        const timestampStr = timestampPart.replace(/^"|"$/g, '').trim()
-
+      // Skip the header row
+      for (const record of parseCsv(csvContent).slice(1)) {
+        const url = record[0]?.trim()
+        const timestampStr = record[1]?.trim()
         if (!url || !timestampStr) continue
 
         const timestamp = parseInt(timestampStr, 10)
@@ -272,9 +238,12 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
     const statusCode = result.statusCode ?? 500
     const redirectTo = result.redirectTo ?? null
 
-    this.db
-      .prepare('REPLACE INTO urls (url, status, redirect_to, time) VALUES (?, ?, ?, unixepoch())')
-      .run(normalizedUrl, statusCode, redirectTo)
+    this.db.set({
+      url: normalizedUrl,
+      status: String(statusCode),
+      redirect_to: redirectTo ?? '',
+      time: String(Math.floor(Date.now() / 1000)),
+    })
     if (statusCode < 200 || statusCode >= 300) {
       if (redirectTo) {
         this.report({
@@ -354,11 +323,11 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
     }
 
     const normalizedUrl = normalizeUrl(url)
-    const row = this.db.prepare('SELECT * FROM urls WHERE url = ?').get(normalizedUrl) as
-      UrlCacheRow | undefined
+    const row = this.db.get(normalizedUrl)
 
     if (row) {
-      if (row.status >= 200 && row.status < 300) {
+      const status = Number(row.status)
+      if (status >= 200 && status < 300) {
         return
       }
       if (row.redirect_to) {
@@ -369,7 +338,7 @@ export default class ExternalLinksRule extends Rule<void, RuleOptions> {
       } else {
         this.report({
           node: target,
-          message: `External link is broken with status ${row.status}: ${url}`,
+          message: `External link is broken with status ${status}: ${url}`,
         })
       }
       return

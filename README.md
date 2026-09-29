@@ -148,7 +148,7 @@ This allows you to validate your HTML before publishing, even when the canonical
         "cacheExpiryFoundSeconds": 2592000,
         "cacheExpiryNotFoundSeconds": 259200,
         "timeoutSeconds": 5,
-        "cacheDatabasePath": "cache/external-links.db",
+        "cacheDatabasePath": "cache/external-links.csv",
         "userAgent": "Mozilla/5.0 (compatible; html-validate-nice-checkers)"
       }
     ]
@@ -165,7 +165,7 @@ This allows you to validate your HTML before publishing, even when the canonical
 | `cacheExpiryFoundSeconds`       | `number`                                     | `2592000`                                                 | Cache duration for successful checks (default: 30 days)                                                                            |
 | `cacheExpiryNotFoundSeconds`    | `number`                                     | `259200`                                                  | Cache duration for failed checks (default: 3 days)                                                                                 |
 | `timeoutSeconds`                | `number`                                     | `5`                                                       | Request timeout in seconds                                                                                                         |
-| `cacheDatabasePath`             | `string`                                     | `"cache/external-links.db"`                               | Path to the cache database file                                                                                                    |
+| `cacheDatabasePath`             | `string`                                     | `"cache/external-links.csv"`                              | Path to the CSV cache database file                                                                                                |
 | `userAgent`                     | `string`                                     | `"Mozilla/5.0 (compatible; html-validate-nice-checkers)"` | User agent string for HTTP requests                                                                                                |
 | `manuallyReviewedPath`          | `string`                                     | `""`                                                      | Path to CSV file with manually reviewed URLs (see below)                                                                           |
 | `manuallyReviewedExpirySeconds` | `number`                                     | `31536000`                                                | Expiry time for manually reviewed URLs (default: 365 days)                                                                         |
@@ -220,7 +220,7 @@ Reports insecure HTTP links that are accessible via HTTPS, encouraging the use o
         "cacheExpiryFoundSeconds": 2592000,
         "cacheExpiryNotFoundSeconds": 259200,
         "timeoutSeconds": 10,
-        "cacheDatabasePath": "cache/https-availability.db"
+        "cacheDatabasePath": "cache/https-availability.csv"
       }
     ]
   }
@@ -229,12 +229,12 @@ Reports insecure HTTP links that are accessible via HTTPS, encouraging the use o
 
 #### Configuration options
 
-| Option                       | Type     | Default                         | Description                                                   |
-| ---------------------------- | -------- | ------------------------------- | ------------------------------------------------------------- |
-| `cacheExpiryFoundSeconds`    | `number` | `2592000`                       | Cache duration for successful HTTPS checks (default: 30 days) |
-| `cacheExpiryNotFoundSeconds` | `number` | `259200`                        | Cache duration for failed HTTPS checks (default: 3 days)      |
-| `timeoutSeconds`             | `number` | `10`                            | Request timeout in seconds                                    |
-| `cacheDatabasePath`          | `string` | `"cache/https-availability.db"` | Path to the cache database file                               |
+| Option                       | Type     | Default                          | Description                                                   |
+| ---------------------------- | -------- | -------------------------------- | ------------------------------------------------------------- |
+| `cacheExpiryFoundSeconds`    | `number` | `2592000`                        | Cache duration for successful HTTPS checks (default: 30 days) |
+| `cacheExpiryNotFoundSeconds` | `number` | `259200`                         | Cache duration for failed HTTPS checks (default: 3 days)      |
+| `timeoutSeconds`             | `number` | `10`                             | Request timeout in seconds                                    |
+| `cacheDatabasePath`          | `string` | `"cache/https-availability.csv"` | Path to the CSV cache database file                           |
 
 ### `nice-checkers/internal-links`
 
@@ -301,7 +301,7 @@ Ensures that package assets loaded from CDNs (like jsDelivr) are using the lates
       {
         "cacheExpirySeconds": 172800,
         "timeoutSeconds": 10,
-        "cacheDatabasePath": "cache/latest-packages.db",
+        "cacheDatabasePath": "cache/latest-packages.csv",
         "skipUrlPatterns": ["googletagmanager.com"]
       }
     ]
@@ -311,12 +311,12 @@ Ensures that package assets loaded from CDNs (like jsDelivr) are using the lates
 
 #### Configuration options
 
-| Option               | Type       | Default                      | Description                                                 |
-| -------------------- | ---------- | ---------------------------- | ----------------------------------------------------------- |
-| `cacheExpirySeconds` | `number`   | `172800`                     | Cache duration for package version checks (default: 2 days) |
-| `timeoutSeconds`     | `number`   | `10`                         | Request timeout in seconds                                  |
-| `cacheDatabasePath`  | `string`   | `"cache/latest-packages.db"` | Path to the cache database file                             |
-| `skipUrlPatterns`    | `string[]` | `[]`                         | Array of URL patterns to skip checking                      |
+| Option               | Type       | Default                       | Description                                                 |
+| -------------------- | ---------- | ----------------------------- | ----------------------------------------------------------- |
+| `cacheExpirySeconds` | `number`   | `172800`                      | Cache duration for package version checks (default: 2 days) |
+| `timeoutSeconds`     | `number`   | `10`                          | Request timeout in seconds                                  |
+| `cacheDatabasePath`  | `string`   | `"cache/latest-packages.csv"` | Path to the CSV cache database file                         |
+| `skipUrlPatterns`    | `string[]` | `[]`                          | Array of URL patterns to skip checking                      |
 
 ### `nice-checkers/match-regex`
 
@@ -619,7 +619,7 @@ Do this every month or so and please send a PR here if you see updates available
 1. Identify external Actions in [.github/workflows](./.github/workflows) scripts and look for available new versions. Review and then update to the new version if it is safe. GitHub-supported Actions (i.e. under the actions/ organization) may require only cursory review.
 1. Review the Node.js version in `.node-version`. Update it when a newer version is appropriate. `fnm install` reads that file. Also review the Node.js versions in [test.yml](.github/workflows/test.yml). Those versions are the maintenance, active, and current release lines allowed by `engines`, which is separate from the local pin.
 1. Review the Yarn version in `package.json` (`packageManager`). Update it with `yarn set version stable && yarn` when a newer stable version is appropriate. [Yarn's install instructions](https://yarnpkg.com/getting-started/install) document that command.
-1. Review direct dependencies with `yarn upgrade-interactive`.
+1. Review direct dependencies with `yarn upgrade-interactive`. Keep `typescript` on 6.x. TypeScript 7 does not resolve packages installed with Yarn PnP ([TypeScript issue #63769](https://github.com/microsoft/TypeScript/issues/63769)), and tsup 8.5.1 fails to generate declarations with TypeScript 7 ([tsup issue #1405](https://github.com/egoist/tsup/issues/1405)).
 1. Download the Schema.org vocabulary from <https://schema.org/docs/developers.html> and save it as `src/vendor/schemaorg-current-https.json`. Schema.org does not publish that file as an npm package, so the update is manual.
 
 ## References

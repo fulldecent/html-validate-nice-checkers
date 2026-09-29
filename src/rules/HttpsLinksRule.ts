@@ -5,16 +5,8 @@ import {
   type SchemaObject,
   Rule,
 } from 'html-validate'
-import Database from 'better-sqlite3'
-import fs from 'node:fs'
-import path from 'node:path'
+import { CsvDatabase } from '../utils/csvDatabase'
 import { syncHead } from '../utils/syncFetch'
-
-interface HttpsCacheRow {
-  url: string
-  found: 0 | 1
-  time: number
-}
 
 interface RuleOptions {
   cacheExpiryFoundSeconds: number
@@ -27,11 +19,11 @@ const defaults: RuleOptions = {
   cacheExpiryFoundSeconds: 30 * 24 * 60 * 60, // Default: 30 days
   cacheExpiryNotFoundSeconds: 3 * 24 * 60 * 60, // Default: 3 days
   timeoutSeconds: 5,
-  cacheDatabasePath: 'cache/https-availability.db',
+  cacheDatabasePath: 'cache/https-availability.csv',
 }
 
 export default class HttpsLinksRule extends Rule<void, RuleOptions> {
-  private db!: Database.Database
+  private db!: CsvDatabase
 
   public constructor(options: Partial<RuleOptions>) {
     /* assign default values if not provided by user */
@@ -54,7 +46,7 @@ export default class HttpsLinksRule extends Rule<void, RuleOptions> {
       },
       cacheDatabasePath: {
         type: 'string',
-        description: 'File path for the SQLite cache database.',
+        description: 'File path for the CSV cache database.',
       },
     }
   }
@@ -67,31 +59,15 @@ export default class HttpsLinksRule extends Rule<void, RuleOptions> {
   }
 
   public override setup(): void {
-    this.db = this.setupDatabase()
+    this.db = CsvDatabase.open(this.options.cacheDatabasePath, ['url', 'found', 'time'], row => {
+      const expirySeconds =
+        row.found === '1'
+          ? this.options.cacheExpiryFoundSeconds
+          : this.options.cacheExpiryNotFoundSeconds
+      return !(Number(row.time) >= Math.floor(Date.now() / 1000) - expirySeconds)
+    })
     this.on('tag:ready', (event: TagReadyEvent) => this.tagReady(event))
-  }
-
-  private setupDatabase(): Database.Database {
-    const dir = path.dirname(this.options.cacheDatabasePath)
-    fs.mkdirSync(dir, { recursive: true })
-
-    const db = new Database(this.options.cacheDatabasePath)
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS urls (
-        url TEXT UNIQUE NOT NULL,
-        found INTEGER NOT NULL,
-        time INTEGER NOT NULL
-      );
-      CREATE INDEX IF NOT EXISTS time_idx ON urls (time);
-    `)
-
-    db.exec(
-      `DELETE FROM urls WHERE found = 1 AND time < unixepoch() - ${this.options.cacheExpiryFoundSeconds}`
-    )
-    db.exec(
-      `DELETE FROM urls WHERE found = 0 AND time < unixepoch() - ${this.options.cacheExpiryNotFoundSeconds}`
-    )
-    return db
+    this.on('dom:ready', () => this.db.close())
   }
 
   private performHttpsCheck(url: string, element: HtmlElement): void {
@@ -102,16 +78,17 @@ export default class HttpsLinksRule extends Rule<void, RuleOptions> {
       maxRedirs: 0,
     })
 
+    const time = String(Math.floor(Date.now() / 1000))
     if (result.success) {
       // The URL is available over HTTPS.
-      this.db.prepare('REPLACE INTO urls (url, found, time) VALUES (?, 1, unixepoch())').run(url)
+      this.db.set({ url, found: '1', time })
       this.report({
         node: element,
         message: `Insecure link can be upgraded to HTTPS: ${url}`,
       })
     } else {
       // The URL is NOT available over HTTPS. Cache this result to avoid re-checking.
-      this.db.prepare('REPLACE INTO urls (url, found, time) VALUES (?, 0, unixepoch())').run(url)
+      this.db.set({ url, found: '0', time })
     }
   }
 
@@ -136,18 +113,17 @@ export default class HttpsLinksRule extends Rule<void, RuleOptions> {
     // A simple decoder. More complex entities would require a library.
     const url = rawUrl.replace(/&amp;/g, '&')
 
-    const row = this.db.prepare('SELECT found FROM urls WHERE url = ?').get(url) as
-      Pick<HttpsCacheRow, 'found'> | undefined
+    const row = this.db.get(url)
 
     if (row) {
-      if (row.found === 1) {
+      if (row.found === '1') {
         // Cache hit: we already know it's upgradable, so report it.
         this.report({
           node: target,
           message: `Insecure link can be upgraded to HTTPS: ${url}`,
         })
       }
-      // If row.found is 0, we know it's not upgradable, so we do nothing.
+      // If row.found is '0', we know it's not upgradable, so we do nothing.
       return
     }
 

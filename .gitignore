@@ -4,7 +4,7 @@
 /tests/fixtures/actual-reports.json
 /tests/fixtures/external-links-manually-reviewed.csv
 
-# SQLite files written by the link-checking rules
+# CSV cache files written by the link-checking rules
 /cache
 
 # yarn.lock is the lockfile. npm install would write a second one.

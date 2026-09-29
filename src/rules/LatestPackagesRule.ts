@@ -5,16 +5,8 @@ import {
   type SchemaObject,
   Rule,
 } from 'html-validate'
-import Database from 'better-sqlite3'
-import fs from 'node:fs'
-import path from 'node:path'
+import { CsvDatabase } from '../utils/csvDatabase'
 import { syncFetch } from '../utils/syncFetch'
-
-interface PackageCacheRow {
-  url: string
-  current: 0 | 1
-  time: number
-}
 
 interface RuleOptions {
   cacheExpirySeconds: number
@@ -26,12 +18,12 @@ interface RuleOptions {
 const defaults: RuleOptions = {
   cacheExpirySeconds: 2 * 24 * 60 * 60, // Default: 2 days
   timeoutSeconds: 5,
-  cacheDatabasePath: 'cache/latest-packages.db',
+  cacheDatabasePath: 'cache/latest-packages.csv',
   skipUrlPatterns: ['googletagmanager.com'],
 }
 
 export default class LatestPackagesRule extends Rule<void, RuleOptions> {
-  private db!: Database.Database
+  private db!: CsvDatabase
 
   public constructor(options: Partial<RuleOptions>) {
     /* assign default values if not provided by user */
@@ -51,7 +43,7 @@ export default class LatestPackagesRule extends Rule<void, RuleOptions> {
       },
       cacheDatabasePath: {
         type: 'string',
-        description: 'File path for the SQLite cache database.',
+        description: 'File path for the CSV cache database.',
       },
       skipUrlPatterns: {
         type: 'array',
@@ -72,28 +64,13 @@ export default class LatestPackagesRule extends Rule<void, RuleOptions> {
   }
 
   public override setup(): void {
-    this.db = this.setupDatabase()
-    this.on('tag:ready', (event: TagReadyEvent) => this.tagReady(event))
-  }
-
-  private setupDatabase(): Database.Database {
-    const dir = path.dirname(this.options.cacheDatabasePath)
-    fs.mkdirSync(dir, { recursive: true })
-
-    const db = new Database(this.options.cacheDatabasePath)
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS latest_packages (
-        url TEXT UNIQUE NOT NULL,
-        current INTEGER NOT NULL,
-        time INTEGER NOT NULL
-      );
-      CREATE INDEX IF NOT EXISTS time_idx ON latest_packages (time);
-    `)
-
-    db.exec(
-      `DELETE FROM latest_packages WHERE time < unixepoch() - ${this.options.cacheExpirySeconds}`
+    this.db = CsvDatabase.open(
+      this.options.cacheDatabasePath,
+      ['url', 'current', 'time'],
+      row => !(Number(row.time) >= Math.floor(Date.now() / 1000) - this.options.cacheExpirySeconds)
     )
-    return db
+    this.on('tag:ready', (event: TagReadyEvent) => this.tagReady(event))
+    this.on('dom:ready', () => this.db.close())
   }
 
   private performPackageCheck(url: string, element: HtmlElement): void {
@@ -123,16 +100,13 @@ export default class LatestPackagesRule extends Rule<void, RuleOptions> {
     try {
       const data = JSON.parse(fetchResult.body)
 
+      const time = String(Math.floor(Date.now() / 1000))
       if (data && data.tags && Object.values(data.tags).includes(packageVersion)) {
         // The version in the URL is a valid tag (e.g., 'latest', 'beta', or a specific version tag).
-        this.db
-          .prepare('REPLACE INTO latest_packages (url, current, time) VALUES (?, 1, unixepoch())')
-          .run(url)
+        this.db.set({ url, current: '1', time })
       } else {
         // The version is not a recognized tag, so it's likely outdated or incorrect.
-        this.db
-          .prepare('REPLACE INTO latest_packages (url, current, time) VALUES (?, 0, unixepoch())')
-          .run(url)
+        this.db.set({ url, current: '0', time })
         this.report({
           node: element,
           message: `Package "${packageName}" is not using a current version tag. Found "${packageVersion}", but latest is "${data.tags.latest}".`,
@@ -181,11 +155,10 @@ export default class LatestPackagesRule extends Rule<void, RuleOptions> {
       })
     }
 
-    const row = this.db.prepare('SELECT current FROM latest_packages WHERE url = ?').get(url) as
-      Pick<PackageCacheRow, 'current'> | undefined
+    const row = this.db.get(url)
 
     if (row) {
-      if (row.current === 0) {
+      if (row.current === '0') {
         // Cache hit: we already know it's outdated, report it.
         this.report({
           node: target,
