@@ -587,17 +587,9 @@ yarn format
 
 Changes are ready to push when `yarn format && yarn lint && yarn test` passes.
 
-### Editor setup for Yarn
+### Editor setup
 
-Yarn installs with Plug'n'Play. An editor that loads TypeScript from a global install will not see this project's version. [Yarn's editor SDK instructions](https://yarnpkg.com/getting-started/editor-sdks) are:
-
-```sh
-yarn dlx @yarnpkg/sdks vscode
-```
-
-Then select the workspace TypeScript version.
-
-`yarn format` and the lint workflow both run `npx prettier@latest`. The editor's Prettier extension can be a different version, so the command above is the one that matches CI.
+`yarn format` and the lint workflow both run `npx prettier@latest`. The editor's Prettier extension can be a different version, so `yarn format` is the one that matches CI.
 
 ### Testing notes
 
@@ -621,7 +613,8 @@ Do this every month or so and please send a PR here if you see updates available
 1. Review the Node.js version in `.node-version`. Update it when a newer version is appropriate. `fnm install` reads that file. This local pin is separate from the versions the package supports.
 1. Review the supported Node.js versions against the [Node.js release schedule](https://nodejs.org/en/about/previous-releases). This package supports the Current, Active LTS, and Maintenance LTS release lines, the same as html-validate. It does not support a Node.js version that the oldest html-validate in `peerDependencies` has dropped from its `engines`. `engines.node` in package.json is the floor, and tsdown compiles to that floor. When a release line reaches end-of-life, or a `peerDependencies` bump raises html-validate's floor, raise `engines.node` and update the Node.js versions in [test.yml](.github/workflows/test.yml) in the same commit.
 1. Review the Yarn version in `package.json` (`packageManager`). Update it with `yarn set version stable && yarn` when a newer stable version is appropriate. [Yarn's install instructions](https://yarnpkg.com/getting-started/install) document that command.
-1. Review direct dependencies with `yarn upgrade-interactive`. Keep `typescript` on 6.x. TypeScript 7 does not resolve packages installed with Yarn PnP ([TypeScript issue #63769](https://github.com/microsoft/TypeScript/issues/63769)).
+1. Review direct dependencies with `yarn upgrade-interactive`.
+1. Check whether [TypeScript issue #63769](https://github.com/microsoft/TypeScript/issues/63769) is fixed and whether Vite still warns about Plug'n'Play ([Vite pull request #21906](https://github.com/vitejs/vite/pull/21906)). When neither blocks Plug'n'Play, remove `nodeLinker` from `.yarnrc.yml`.
 1. Download the Schema.org vocabulary from <https://schema.org/docs/developers.html> and save it as `src/vendor/schemaorg-current-https.json`. Schema.org does not publish that file as an npm package, so the update is manual.
 
 ## References
@@ -630,7 +623,7 @@ Do this every month or so and please send a PR here if you see updates available
 1. This project uses the MIT license, the same license as [node.js-template](https://github.com/fulldecent/node.js-template).
 1. We would prefer if fnm supported build attestations since it is installed as a binary ([issue #1588](https://github.com/Schniz/fnm/issues/1588)).
 1. Node.js ignore rules are inlined from [Node.gitignore](https://github.com/github/gitignore/blob/main/Node.gitignore). This project also ignores `/cache`, the fixture files that tests rewrite, and `package-lock.json`. `package-lock.json` is ignored because dependencies are locked with `yarn.lock`.
-1. `.yarnrc.yml` sets `enableScripts` to true (Yarn 4.14 defaults to false) and `npmMinimalAgeGate` to 0 (Yarn 4.12 defaults to one day). `approvedGitRepositories` is `"**"`, which approves every git dependency. [Yarn: Security](https://yarnpkg.com/features/security)
+1. `.yarnrc.yml` sets `enableScripts` to true (Yarn 4.14 defaults to false) and `npmMinimalAgeGate` to 0 (Yarn 4.12 defaults to one day). `approvedGitRepositories` is `"**"`, which approves every git dependency. [Yarn: Security](https://yarnpkg.com/features/security). It also sets `nodeLinker: pnpm` instead of the default, Plug'n'Play, because TypeScript 7 and Vite do not support Plug'n'Play. The comments in that file link to both upstream issues.
 1. Prettier options are in [.prettierrc](.prettierrc). [node.js-template](https://github.com/fulldecent/node.js-template) has no application source and therefore no Prettier config. Formatting still uses `npx prettier@latest`, the same command as that template's lint workflow.
 1. `.prettierignore` ignores `*.md`, the same as the template. It also ignores `tests/fixtures` and `src/vendor`. Fixture HTML is the exact input for `required-reports.json`, which records line, column, and byte offset. `src/vendor/schemaorg-current-https.json` is a file downloaded from Schema.org.
 1. markdownlint disables MD013, the same as the template, and sets MD024 `siblings_only`. Each rule section repeats the headings "Configuration" and "Configuration options". `siblings_only` allows that because each heading sits under a different rule.
