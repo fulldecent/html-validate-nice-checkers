@@ -22,8 +22,7 @@
   ],
   "type": "module",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/index.d.cts",
   "exports": {
     ".": {
       "import": {
@@ -43,26 +42,29 @@
   ],
   "--": "format uses npx @latest so it matches .github/workflows/lint.yml. A pinned devDependency would let the local write and the CI check disagree.",
   "scripts": {
-    "build": "tsup",
-    "build:watch": "tsup --watch",
+    "build": "tsdown",
+    "build:watch": "tsdown --watch",
     "test": "vitest --run",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
     "lint": "tsc --noEmit",
+    "check:package": "publint && attw --pack .",
     "format": "npx prettier@latest --write . && npx markdownlint-cli@latest --fix '**/*.md' --ignore node_modules",
     "clean": "rimraf dist",
-    "prepublishOnly": "yarn clean && npx prettier@latest --check . && npx markdownlint-cli@latest '**/*.md' --ignore node_modules && yarn lint && yarn test && yarn build",
+    "prepublishOnly": "yarn clean && npx prettier@latest --check . && npx markdownlint-cli@latest '**/*.md' --ignore node_modules && yarn lint && yarn test && yarn build && yarn check:package",
     "dev": "yarn build:watch"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@jaredwray/mockhttp": "^2.0.0",
     "@types/node": "^26.6.3",
     "@types/shell-quote": "^1.7.5",
     "@vitest/coverage-v8": "^5.0.2",
     "html-validate": "^11.16.1",
+    "publint": "^0.3.24",
     "rimraf": "^6.1.3",
     "structured-data-testing-tool": "^4.5.0",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.23.0",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "vite": "^8.3.1",
@@ -72,7 +74,7 @@
     "html-validate": "^10.0.0 || ^11.0.0"
   },
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22.16.0"
   },
   "packageManager": "yarn@4.18.1",
   "dependencies": {

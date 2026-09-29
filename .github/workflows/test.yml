@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # engines is >=22. 22, 24, and 26 are the maintenance, active, and current Node.js release lines.
+        # engines follows html-validate's floor. 22, 24, and 26 are the maintenance, active, and current Node.js release lines.
         # Local development uses .node-version (24), the same pin as node.js-template.
         node-version: [22.x, 24.x, 26.x]
 
@@ -44,7 +44,7 @@ jobs:
       - name: Build package
         run: yarn build
 
-  # The published package is the tsup build. Import it the way an application would.
+  # The published package is the tsdown build. Load it the way html-validate users do, from ESM and from CommonJS.
   package-test:
     runs-on: ubuntu-latest
     needs: test
@@ -73,6 +73,9 @@ jobs:
           yarn install --immutable
           yarn build
 
+      - name: Check package exports and types (publint, arethetypeswrong)
+        run: yarn check:package
+
       - name: Pack package
         run: |
           yarn pack
@@ -82,43 +85,56 @@ jobs:
       - name: Test ESM import
         run: |
           # Create test dir in /tmp to avoid yarn workspace conflicts
-          cd /tmp
-          mkdir -p test-esm && cd test-esm
+          mkdir -p /tmp/test-esm && cd /tmp/test-esm
+          echo '{ "private": true, "type": "module" }' > package.json
 
-          # Create simple package.json
-          cat > package.json << 'JSON'
-          { "type": "module" }
-          JSON
-          npm init -y > /dev/null
-
-          # Install the packed tarball - yarn pack always creates package.tgz
+          # yarn pack always creates package.tgz. npm installs the html-validate peer.
           npm install "${{ github.workspace }}/package.tgz"
 
-          # Create test script
           cat > test.mjs << 'JS'
-          import plugin from '@fulldecent/nice-checkers-plugin';
-          console.log('✅ ESM import successful');
-          console.log('Plugin name:', plugin.name);
-          console.log('Plugin rules:', Object.keys(plugin.rules || {}));
-          console.log('Plugin configs:', Object.keys(plugin.configs || {}));
+          import assert from 'node:assert/strict'
+          import { HtmlValidate, StaticConfigLoader } from 'html-validate'
+          import NiceCheckersPlugin from '@fulldecent/nice-checkers-plugin'
+
+          // Same configuration as the .htmlvalidate.mjs example in README.md
+          const htmlvalidate = new HtmlValidate(
+            new StaticConfigLoader({
+              plugins: [NiceCheckersPlugin],
+              extends: ['nice-checkers-plugin:recommended'],
+            })
+          )
+          const report = await htmlvalidate.validateString('<script src="/jquery.js"></script>')
+          const ruleIds = report.results[0].messages.map(message => message.ruleId)
+          assert.ok(ruleIds.includes('nice-checkers/no-jquery'), ruleIds.join(', '))
+          console.log('ESM import works with html-validate')
           JS
           node test.mjs
 
       - name: Test CJS require
         run: |
-          cd /tmp
-          mkdir -p test-cjs && cd test-cjs
-
-          npm init -y > /dev/null
+          mkdir -p /tmp/test-cjs && cd /tmp/test-cjs
+          echo '{ "private": true }' > package.json
           npm install "${{ github.workspace }}/package.tgz"
 
           cat > test.cjs << 'JS'
-          const plugin = require('@fulldecent/nice-checkers-plugin');
-          console.log('✅ CJS require successful');
-          // CJS might require accessing the default export
-          const actualPlugin = plugin.default || plugin;
-          console.log('Plugin name:', actualPlugin.name);
-          console.log('Plugin rules:', Object.keys(actualPlugin.rules || {}));
-          console.log('Plugin configs:', Object.keys(actualPlugin.configs || {}));
+          const assert = require('node:assert/strict')
+          const { HtmlValidate, StaticConfigLoader, cjsResolver } = require('html-validate')
+
+          // require() returns the plugin itself, not { default: plugin }
+          const plugin = require('@fulldecent/nice-checkers-plugin')
+          assert.equal(plugin.name, 'nice-checkers-plugin')
+
+          // cjsResolver loads plugins by package name with require()
+          const htmlvalidate = new HtmlValidate(
+            new StaticConfigLoader([cjsResolver()], {
+              plugins: ['@fulldecent/nice-checkers-plugin'],
+              extends: ['nice-checkers-plugin:recommended'],
+            })
+          )
+          htmlvalidate.validateString('<script src="/jquery.js"></script>').then(report => {
+            const ruleIds = report.results[0].messages.map(message => message.ruleId)
+            assert.ok(ruleIds.includes('nice-checkers/no-jquery'), ruleIds.join(', '))
+            console.log('CJS require works with html-validate cjsResolver')
+          })
           JS
           node test.cjs

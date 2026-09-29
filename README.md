@@ -9,13 +9,13 @@ Nice Checkers is an [HTML-validate](https://html-validate.org/) plugin with 11 r
 
 The npm package is [@fulldecent/nice-checkers-plugin](https://www.npmjs.com/package/@fulldecent/nice-checkers-plugin). It publishes ESM and CommonJS builds and TypeScript types. It runs in Node.js while a site is built. Some rules call other sites with `curl`. A `fetch()` implementation is blocked by [html-validate issue 317](https://gitlab.com/html-validate/html-validate/-/issues/317).
 
-`engines` allows Node.js 22 and newer. [Tests](.github/workflows/test.yml) run on the Node.js 22, 24, and 26 release lines. [Lint](.github/workflows/lint.yml) checks Prettier and markdownlint. Local development uses the Node.js version in [.node-version](.node-version).
+`engines` allows Node.js 22.16 and newer, which is the oldest Node.js supported by html-validate 10. [Tests](.github/workflows/test.yml) run on the Node.js 22, 24, and 26 release lines. [Lint](.github/workflows/lint.yml) checks Prettier and markdownlint. Local development uses the Node.js version in [.node-version](.node-version).
 
 [GitHub Pages template](https://github.com/fulldecent/github-pages-template) is a site that uses this plugin, with Actions and Pages deployment.
 
 ## Installation
 
-These instructions assume Nice Checkers is part of a web test suite running Node.js 22 or newer and [HTML-validate](https://html-validate.org/).
+These instructions assume Nice Checkers is part of a web test suite running Node.js 22.16 or newer and [HTML-validate](https://html-validate.org/).
 
 ### Add the package
 
@@ -39,7 +39,7 @@ This example assumes you are using the .htmlvalidate.mjs configuration flavor. H
 
 ```diff
   import { defineConfig } from "html-validate";
-+ import { NiceCheckersPlugin } from "@fulldecent/nice-checkers-plugin"
++ import NiceCheckersPlugin from "@fulldecent/nice-checkers-plugin"
 
   export default defineConfig({
 -   "extends": ["htmlvalidate:recommended"]
@@ -582,6 +582,7 @@ yarn format
 - `yarn test:watch` runs the tests in watch mode
 - `yarn test:coverage` runs the tests and generates a coverage report
 - `yarn lint` runs TypeScript type checking
+- `yarn check:package` checks the built package with publint and arethetypeswrong
 - `yarn format` formats files with Prettier and markdownlint
 
 Changes are ready to push when `yarn format && yarn lint && yarn test` passes.
@@ -608,7 +609,7 @@ Package versions use [Semantic Versioning](https://semver.org/).
 
 1. Finish the changes that belong in the release.
 1. Bump `peerDependencies` when a newly supported html-validate version requires it.
-1. Run `yarn && yarn format && yarn lint && yarn build && yarn test`.
+1. Run `yarn && yarn format && yarn lint && yarn build && yarn test && yarn check:package`.
 1. Bump `version` in package.json in a commit by itself.
 1. Create a GitHub release for that version. [publish.yml](.github/workflows/publish.yml) publishes the package to npm.
 
@@ -617,9 +618,10 @@ Package versions use [Semantic Versioning](https://semver.org/).
 Do this every month or so and please send a PR here if you see updates available:
 
 1. Identify external Actions in [.github/workflows](./.github/workflows) scripts and look for available new versions. Review and then update to the new version if it is safe. GitHub-supported Actions (i.e. under the actions/ organization) may require only cursory review.
-1. Review the Node.js version in `.node-version`. Update it when a newer version is appropriate. `fnm install` reads that file. Also review the Node.js versions in [test.yml](.github/workflows/test.yml). Those versions are the maintenance, active, and current release lines allowed by `engines`, which is separate from the local pin.
+1. Review the Node.js version in `.node-version`. Update it when a newer version is appropriate. `fnm install` reads that file. This local pin is separate from the versions the package supports.
+1. Review the supported Node.js versions against the [Node.js release schedule](https://nodejs.org/en/about/previous-releases). This package supports the Current, Active LTS, and Maintenance LTS release lines, the same as html-validate. It does not support a Node.js version that the oldest html-validate in `peerDependencies` has dropped from its `engines`. `engines.node` in package.json is the floor, and tsdown compiles to that floor. When a release line reaches end-of-life, or a `peerDependencies` bump raises html-validate's floor, raise `engines.node` and update the Node.js versions in [test.yml](.github/workflows/test.yml) in the same commit.
 1. Review the Yarn version in `package.json` (`packageManager`). Update it with `yarn set version stable && yarn` when a newer stable version is appropriate. [Yarn's install instructions](https://yarnpkg.com/getting-started/install) document that command.
-1. Review direct dependencies with `yarn upgrade-interactive`. Keep `typescript` on 6.x. TypeScript 7 does not resolve packages installed with Yarn PnP ([TypeScript issue #63769](https://github.com/microsoft/TypeScript/issues/63769)), and tsup 8.5.1 fails to generate declarations with TypeScript 7 ([tsup issue #1405](https://github.com/egoist/tsup/issues/1405)).
+1. Review direct dependencies with `yarn upgrade-interactive`. Keep `typescript` on 6.x. TypeScript 7 does not resolve packages installed with Yarn PnP ([TypeScript issue #63769](https://github.com/microsoft/TypeScript/issues/63769)).
 1. Download the Schema.org vocabulary from <https://schema.org/docs/developers.html> and save it as `src/vendor/schemaorg-current-https.json`. Schema.org does not publish that file as an npm package, so the update is manual.
 
 ## References
@@ -632,7 +634,8 @@ Do this every month or so and please send a PR here if you see updates available
 1. Prettier options are in [.prettierrc](.prettierrc). [node.js-template](https://github.com/fulldecent/node.js-template) has no application source and therefore no Prettier config. Formatting still uses `npx prettier@latest`, the same command as that template's lint workflow.
 1. `.prettierignore` ignores `*.md`, the same as the template. It also ignores `tests/fixtures` and `src/vendor`. Fixture HTML is the exact input for `required-reports.json`, which records line, column, and byte offset. `src/vendor/schemaorg-current-https.json` is a file downloaded from Schema.org.
 1. markdownlint disables MD013, the same as the template, and sets MD024 `siblings_only`. Each rule section repeats the headings "Configuration" and "Configuration options". `siblings_only` allows that because each heading sits under a different rule.
-1. [test.yml](.github/workflows/test.yml) runs `yarn lint`, `yarn test`, and `yarn build`, then packs the package and imports it from ESM and from CommonJS. The test script in node.js-template is `true`, which is enough for a package with no behavior of its own. This job also runs on Node.js 22, 24, and 26 because `engines` is `>=22` and those are the maintenance, active, and current release lines. `.node-version` stays at 24.
+1. [test.yml](.github/workflows/test.yml) runs `yarn lint`, `yarn test`, and `yarn build`. Then it checks the package with publint and arethetypeswrong, packs it, and loads it into html-validate from ESM and from CommonJS. The CommonJS test uses html-validate's `cjsResolver`, which loads plugins with `require()`. The test script in node.js-template is `true`, which is enough for a package with no behavior of its own. This job runs on Node.js 22, 24, and 26, the Maintenance LTS, Active LTS, and Current release lines. `.node-version` stays at 24.
+1. [tsdown.config.ts](tsdown.config.ts) builds `dist/` from `src/index.ts`: `.js` and `.d.ts` for `import`, `.cjs` and `.d.cts` for `require`, matching `exports` in package.json. `tsc --noEmit` type checks and does not publish. The build is not minified so that people can debug the rules. html-validate is a peer dependency and is not bundled. CommonJS is kept for html-validate's `cjsResolver`, so the build turns off tsdown's `legacyCjs` warning.
 1. [publish.yml](.github/workflows/publish.yml) publishes to npm when a GitHub release is published. node.js-template sets `"private": true` and is not an npm package.
 1. This project is built based on [best practices documented in node.js-template](https://github.com/fulldecent/node.js-template).
 1. This project is built based on [best practices documented in project-template](https://github.com/fulldecent/project-template), release 1.0.0.
